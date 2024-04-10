@@ -51,8 +51,13 @@ mutation($title: String!) {
 ```json
 mutation($options: UsernamePasswordInput!) {
   register(options: $options) {
-    id
-    username
+    errors {
+      field
+      message
+    }
+    user {
+      username
+    }
   }
 }
 ```
@@ -62,6 +67,21 @@ mutation($options: UsernamePasswordInput!) {
   "options": {
     "username": "macdoos",
     "password": "secret"
+  }
+}
+```
+
+### user: login
+```json
+mutation($options: UsernamePasswordInput!) {
+  login(options: $options) {
+    errors {
+      field
+      message
+    }
+    user {
+      username
+    }
   }
 }
 ```
