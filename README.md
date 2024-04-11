@@ -27,6 +27,14 @@
 ###  password hashing
 - `yarn add argon2` - [reason](https://news.ycombinator.com/item?id=15646743) to choose argon2 over bcrypt
 
+### redis server on macOS
+- `brew install redis`
+- `redis-server` - run server
+- [more](https://redis.io/docs/latest/operate/oss_and_stack/install/install-redis/install-redis-on-mac-os/)
+- [connect-redis](https://github.com/tj/connect-redis)
+  - `yarn add redis connect-redis express-session`
+  - `yarn add -D @types/redis @types/express-session @types/connect-redis @types/express-session`
+
 ## URLs
 - `http://localhost:4000/graphql` - graphql playground
 - `postgresql://postgres@127.0.0.1:5432` - postgresql url
@@ -82,6 +90,16 @@ mutation($options: UsernamePasswordInput!) {
     user {
       username
     }
+  }
+}
+```
+
+### me query
+```json
+{
+  me {
+    id
+    username
   }
 }
 ```
