@@ -1,6 +1,5 @@
 import { MikroORM } from "@mikro-orm/core";
 import { __prod__ } from "./constants";
-// import { Post } from "./entities/Post";
 import mikroOrmConfig from "./mikro-orm.config";
 import express from "express";
 import { ApolloServer } from 'apollo-server-express';
@@ -8,6 +7,9 @@ import { buildSchema } from "type-graphql";
 import { HelloResolver } from "./resolvers/hello";
 import { PostResolver } from "./resolvers/post";
 import { UserResolver } from "./resolvers/user";
+import session from "express-session";
+import { createClient } from 'redis';
+import RedisStore from "connect-redis"
 
 const main = async () => {
   const orm = await MikroORM.init(mikroOrmConfig);
@@ -15,16 +17,37 @@ const main = async () => {
 
   const app = express();
 
-  // app.get('/', (_, res) => {
-  //   res.send('sup');
-  // })
+  const redisClient = createClient();
+  await redisClient.connect();
+  redisClient.connect().catch(console.error)
+
+  let redisStore = new (RedisStore as any)({
+    client: redisClient,
+    prefix: "myapp:",
+  })
+
+  app.use(
+    session({
+      name: 'qid',
+      store: redisStore,
+      resave: false, 
+      saveUninitialized: false,
+      secret: "keyboard cat",
+      cookie: {
+        maxAge: 1000 * 60 * 60 * 24 * 365 * 10, // 10 years
+        httpOnly: true,
+        secure: __prod__,
+        sameSite: 'lax',
+      }
+    }),
+  )
 
   const apolloServer =  new ApolloServer({
     schema: await buildSchema({
       resolvers: [HelloResolver, PostResolver, UserResolver],
       validate: false,
     }),
-    context: () => ({ em: orm.em })
+    context: ({ req, res }) => ({ em: orm.em, req, res }),
   });
 
   await apolloServer.start();
@@ -33,8 +56,6 @@ const main = async () => {
   app.listen(4000, () => {
     console.log('server started on localhost:4000')
   })
-  // const post = orm.em.create(Post, { title: "sup" });
-  // await orm.em.persistAndFlush(post);
 };
 
 main();
