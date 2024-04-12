@@ -17,15 +17,7 @@ import {
 import { Input } from "@/components/ui/input"
 import { useQuery, gql, useMutation } from '@apollo/client';
 import { useRegisterUserMutation } from '../../gql/graphql';
-
-const GET_POSTS = gql(/* GraphQL */ `
-  query GetPosts {
-    posts {
-      id
-      title
-    }
-  }
-`);
+import { useRouter } from 'next/navigation'
 
 const formSchema = z.object({
   username: z.string().min(2, {
@@ -34,18 +26,18 @@ const formSchema = z.object({
   password: z.string().min(2, {
     message: "Password must be at least 2 characters.",
   }),
-  confirm: z.string().min(2, {
-    message: "Password must be at least 2 characters.",
-  }),
+  confirm: z.string(),
 }).refine((data) => data.password === data.confirm, {
   message: "Passwords don't match",
   path: ["confirm"], // path of error
 });
 
+type FormFields = keyof z.infer<typeof formSchema>;
 
 export default function Page() {
 
   const [registerUser, { data, loading, error }] = useRegisterUserMutation();
+  const router = useRouter();
 
   // 1. Define your form.
   const form = useForm<z.infer<typeof formSchema>>({
@@ -70,8 +62,20 @@ export default function Page() {
         }
       },
     });
-
-    return response.data?.register.user?.username;
+    
+    const errors = response.data?.register.errors;
+    if (errors){
+      errors.forEach(err => {
+        const fieldName = err.field as FormFields;
+        form.setError(fieldName, {
+          type: err.field,
+          message: err.message,
+        })
+      })
+    }
+    else if (response.data?.register.user) {
+      router.push('/');
+    }
   }
   
   return (
