@@ -8,8 +8,9 @@ import { HelloResolver } from "./resolvers/hello";
 import { PostResolver } from "./resolvers/post";
 import { UserResolver } from "./resolvers/user";
 import session from "express-session";
-import { createClient } from 'redis';
-import RedisStore from "connect-redis"
+import IORedis from 'ioredis';
+import RedisStore from "connect-redis";
+import cors from 'cors';
 
 const main = async () => {
   const orm = await MikroORM.init(mikroOrmConfig);
@@ -17,13 +18,10 @@ const main = async () => {
 
   const app = express();
 
-  const redisClient = createClient();
-  await redisClient.connect();
-  redisClient.connect().catch(console.error)
+  const redisClient = new IORedis(process.env.REDIS_URL || "redis://127.0.0.1:6379");
 
   let redisStore = new (RedisStore as any)({
     client: redisClient,
-    prefix: "myapp:",
   })
 
   app.use(
@@ -50,8 +48,13 @@ const main = async () => {
     context: ({ req, res }) => ({ em: orm.em, req, res }),
   });
 
+  app.use(cors({
+    origin: 'http://localhost:3000', // Adjust this to match your client URL
+    credentials: true
+  }));
+
   await apolloServer.start();
-  apolloServer.applyMiddleware({ app });
+  apolloServer.applyMiddleware({ app, cors: false });
 
   app.listen(4000, () => {
     console.log('server started on localhost:4000')
