@@ -15,7 +15,31 @@ import {
   FormMessage,
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
- 
+import { useQuery, gql, useMutation } from '@apollo/client';
+
+const GET_POSTS = gql(/* GraphQL */ `
+  query GetPosts {
+    posts {
+      id
+      title
+    }
+  }
+`);
+
+const REGISTER_USER_MUTATION = gql`
+  mutation RegisterUserMutation($options: UsernamePasswordInput!){
+    register(options: $options) {
+      errors {
+        field
+        message
+      }
+      user {
+        username
+      }
+    }
+  }
+`
+
 const formSchema = z.object({
   username: z.string().min(2, {
     message: "Username must be at least 2 characters.",
@@ -33,6 +57,12 @@ const formSchema = z.object({
 
 
 export default function Page() {
+  // const { loading, error, data } = useQuery(GET_POSTS);
+
+  // const [, registerUser] = useMutation(REGISTER_USER_MUTATION);
+
+  const [registerUser, { data, loading, error }] = useMutation(REGISTER_USER_MUTATION);
+
   // 1. Define your form.
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -48,8 +78,16 @@ export default function Page() {
     // Do something with the form values.
     // ✅ This will be type-safe and validated.
     console.log(values)
+    return registerUser({
+      variables: {
+        options: {
+          username: values.username,
+          password: values.password,
+        }
+      },
+    });
   }
-
+  
   return (
 <main className="flex flex-col items-center justify-between p-24">
   <div className="z-10 w-full max-w-xl items-center justify-between font-mono text-sm">
@@ -95,7 +133,7 @@ export default function Page() {
             </FormItem>
           )}
         />
-        <Button type="submit">Submit</Button>
+        <Button type="submit">Register</Button>
       </form>
     </Form>
   </div>
