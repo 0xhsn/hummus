@@ -122,7 +122,18 @@ export class UserResolver{
       }
     }
 
-    req.session.userId = user.id;
+    if (user) {
+      req.session.userId = user.id; // Ensure this line is executed
+      req.session.save(err => {
+        if (err) {
+          console.error("Error saving session:", err);
+        } else {
+          console.log("Session saved with userId:", req.session.userId);
+        }
+      });
+    } else {
+      console.error("User not found or invalid password");
+    }
 
     return {
       user,

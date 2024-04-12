@@ -103,3 +103,25 @@ mutation($options: UsernamePasswordInput!) {
   }
 }
 ```
+
+## sessions explained
+```js
+req.session.userId = user.id;
+```
+
+`{ userId: 1 }` -> send that to redis
+
+
+1. `session:qwerty` -> `{ userId: 1 }`
+
+2. `express-session` will set a cookie on my browser (`qwerty`)
+
+3. when user makes a request: `qwerty` -> sent to the server
+
+4. server decrypts the cookie: `qwerty` -> `session:qwerty`
+
+5. server makes a request to redis: `session:qwerty` -> `{ userId: 1 }`
+
+```js
+req.session = { userId: 1 }
+```
