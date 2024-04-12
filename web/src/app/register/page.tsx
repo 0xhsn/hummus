@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { useQuery, gql, useMutation } from '@apollo/client';
+import { useRegisterUserMutation } from '../../gql/graphql';
 
 const GET_POSTS = gql(/* GraphQL */ `
   query GetPosts {
@@ -25,20 +26,6 @@ const GET_POSTS = gql(/* GraphQL */ `
     }
   }
 `);
-
-const REGISTER_USER_MUTATION = gql`
-  mutation RegisterUserMutation($options: UsernamePasswordInput!){
-    register(options: $options) {
-      errors {
-        field
-        message
-      }
-      user {
-        username
-      }
-    }
-  }
-`
 
 const formSchema = z.object({
   username: z.string().min(2, {
@@ -57,11 +44,8 @@ const formSchema = z.object({
 
 
 export default function Page() {
-  // const { loading, error, data } = useQuery(GET_POSTS);
 
-  // const [, registerUser] = useMutation(REGISTER_USER_MUTATION);
-
-  const [registerUser, { data, loading, error }] = useMutation(REGISTER_USER_MUTATION);
+  const [registerUser, { data, loading, error }] = useRegisterUserMutation();
 
   // 1. Define your form.
   const form = useForm<z.infer<typeof formSchema>>({
@@ -74,11 +58,11 @@ export default function Page() {
   })
  
   // 2. Define a submit handler.
-  function onSubmit(values: z.infer<typeof formSchema>) {
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
     // Do something with the form values.
     // ✅ This will be type-safe and validated.
     console.log(values)
-    return registerUser({
+    const response = await registerUser({
       variables: {
         options: {
           username: values.username,
@@ -86,6 +70,8 @@ export default function Page() {
         }
       },
     });
+
+    return response.data?.register.user?.username;
   }
   
   return (

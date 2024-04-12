@@ -39,6 +39,10 @@
 - [apollo-client-nextjs](https://github.com/apollographql/apollo-client-nextjs)
 - [Apollo React Docs](https://www.apollographql.com/docs/react/data/mutations)
 
+### graphql code gen
+- [Docs](https://the-guild.dev/graphql/codegen/plugins/typescript/typescript-apollo-next)
+- enable `withHooks`
+
 ## URLs
 - `http://localhost:4000/graphql` - graphql playground
 - `postgresql://postgres@127.0.0.1:5432` - postgresql url
