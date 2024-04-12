@@ -15,8 +15,18 @@ import {
   FormMessage,
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
-import { useLoginUserMutation } from '../../gql/graphql';
+import { useLoginUserMutation, useMeQuery } from '../../gql/graphql';
 import { useRouter } from 'next/navigation'
+import { useQuery, gql } from '@apollo/client';
+
+const GET_ME = gql`
+  query Me {
+    me {
+      id
+      username
+    }
+  }
+`;
 
 const formSchema = z.object({
   username: z.string(),
@@ -51,6 +61,7 @@ export default function Page() {
           password: values.password,
         }
       },
+      refetchQueries: [{ query: GET_ME }],
     });
     
     const errors = response.data?.login.errors;
