@@ -35,6 +35,10 @@
   - `yarn add redis connect-redis express-session`
   - `yarn add -D @types/redis @types/express-session @types/connect-redis @types/express-session`
 
+### apollo (fronend)
+- [apollo-client-nextjs](https://github.com/apollographql/apollo-client-nextjs)
+- [Apollo React Docs](https://www.apollographql.com/docs/react/data/mutations)
+
 ## URLs
 - `http://localhost:4000/graphql` - graphql playground
 - `postgresql://postgres@127.0.0.1:5432` - postgresql url
