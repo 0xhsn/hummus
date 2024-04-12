@@ -19,15 +19,6 @@ import { useQuery, gql, useMutation } from '@apollo/client';
 import { useRegisterUserMutation } from '../../gql/graphql';
 import { useRouter } from 'next/navigation'
 
-const GET_ME = gql`
-  query Me {
-    me {
-      id
-      username
-    }
-  }
-`;
-
 const formSchema = z.object({
   username: z.string().min(2, {
     message: "Username must be at least 2 characters.",
