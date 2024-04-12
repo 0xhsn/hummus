@@ -1,16 +1,26 @@
-import { MyContext } from 'src/types';
-import { Mutation, Arg, Resolver, Ctx, InputType, Field, ObjectType, Query } from 'type-graphql';
+import { MyContext } from "src/types";
+import {
+  Mutation,
+  Arg,
+  Resolver,
+  Ctx,
+  InputType,
+  Field,
+  ObjectType,
+  Query,
+} from "type-graphql";
 import { User } from "../entities/User";
-import argon2 from 'argon2';
-import { EntityManager } from '@mikro-orm/postgresql';
+import argon2 from "argon2";
+import { EntityManager } from "@mikro-orm/postgresql";
+import { COOKIE_NAME } from "../constants";
 
 @InputType()
-class UsernamePasswordInput{
+class UsernamePasswordInput {
   @Field()
-  username: string
+  username: string;
 
   @Field()
-  password: string
+  password: string;
 }
 
 @ObjectType()
@@ -32,15 +42,15 @@ class UserResponse {
 }
 
 @Resolver()
-export class UserResolver{
-  @Query(() => User, { nullable: true})
-  async me(@Ctx() { req, em }: MyContext){
+export class UserResolver {
+  @Query(() => User, { nullable: true })
+  async me(@Ctx() { req, em }: MyContext) {
     // u r not logged in
-    if (!req.session.userId){
+    if (!req.session.userId) {
       return null;
     }
 
-    const user = await em.findOne(User, { id: req.session.userId })
+    const user = await em.findOne(User, { id: req.session.userId });
     return user;
   }
 
@@ -49,47 +59,51 @@ export class UserResolver{
     @Arg("options") options: UsernamePasswordInput,
     @Ctx() { em, req }: MyContext
   ): Promise<UserResponse> {
-    if(options.username.length <= 2){
+    if (options.username.length <= 2) {
       return {
         errors: [
           {
             field: "username",
             message: "length must be greater than 2",
-          }
-        ]
-      } 
+          },
+        ],
+      };
     }
 
-    if(options.password.length <= 3){
+    if (options.password.length <= 3) {
       return {
         errors: [
           {
             field: "password",
             message: "length must be greater than 3",
-          }
-        ]
-      } 
+          },
+        ],
+      };
     }
     const hashedPassword = await argon2.hash(options.password);
     let user;
     try {
-      const result = await (em as EntityManager).createQueryBuilder(User).getKnexQuery().insert({
-        username: options.username,
-        password: hashedPassword,
-        created_at: new Date(),
-        updated_at: new Date(),
-      }).returning('*');
+      const result = await (em as EntityManager)
+        .createQueryBuilder(User)
+        .getKnexQuery()
+        .insert({
+          username: options.username,
+          password: hashedPassword,
+          created_at: new Date(),
+          updated_at: new Date(),
+        })
+        .returning("*");
       user = result[0];
     } catch (err) {
-      if(err.code === '23505'){
+      if (err.code === "23505") {
         return {
           errors: [
             {
               field: "username",
               message: "already taken",
-            }
-          ]
-        } 
+            },
+          ],
+        };
       }
     }
 
@@ -98,7 +112,7 @@ export class UserResolver{
 
     return {
       user,
-    }
+    };
   }
 
   @Mutation(() => UserResponse)
@@ -106,32 +120,32 @@ export class UserResolver{
     @Arg("options") options: UsernamePasswordInput,
     @Ctx() { em, req }: MyContext
   ): Promise<UserResponse> {
-    const user = await em.findOne(User, { username: options.username })
-    if(!user){
+    const user = await em.findOne(User, { username: options.username });
+    if (!user) {
       return {
         errors: [
           {
             field: "username",
             message: "username doesn't exist",
-          }
-        ]
-      }
+          },
+        ],
+      };
     }
     const valid = await argon2.verify(user.password, options.password);
-    if(!valid){
+    if (!valid) {
       return {
         errors: [
           {
             field: "password",
             message: "incorrect password",
-          }
-        ]
-      }
+          },
+        ],
+      };
     }
 
     if (user) {
       req.session.userId = user.id; // Ensure this line is executed
-      req.session.save(err => {
+      req.session.save((err) => {
         if (err) {
           console.error("Error saving session:", err);
         } else {
@@ -145,5 +159,21 @@ export class UserResolver{
     return {
       user,
     };
+  }
+
+  @Mutation(() => Boolean)
+  logout(@Ctx() { req, res }: MyContext) {
+    return new Promise((resolve) =>
+      req.session.destroy((err) => {
+        res.clearCookie(COOKIE_NAME);
+        if (err) {
+          console.log(err);
+          resolve(false);
+          return;
+        }
+
+        resolve(true);
+      })
+    );
   }
 }
