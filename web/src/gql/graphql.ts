@@ -47,7 +47,8 @@ export type MutationDeletePostArgs = {
 
 
 export type MutationLoginArgs = {
-  options: UsernamePasswordInput;
+  password: Scalars['String']['input'];
+  usernameOrEmail: Scalars['String']['input'];
 };
 
 
@@ -85,6 +86,7 @@ export type QueryPostArgs = {
 export type User = {
   __typename?: 'User';
   createdAt: Scalars['String']['output'];
+  email?: Maybe<Scalars['String']['output']>;
   id: Scalars['Float']['output'];
   updatedAt: Scalars['String']['output'];
   username: Scalars['String']['output'];
@@ -97,12 +99,14 @@ export type UserResponse = {
 };
 
 export type UsernamePasswordInput = {
+  email: Scalars['String']['input'];
   password: Scalars['String']['input'];
   username: Scalars['String']['input'];
 };
 
 export type LoginUserMutationVariables = Exact<{
-  options: UsernamePasswordInput;
+  usernameOrEmail: Scalars['String']['input'];
+  password: Scalars['String']['input'];
 }>;
 
 
@@ -127,8 +131,8 @@ export type MeQuery = { __typename?: 'Query', me?: { __typename?: 'User', id: nu
 
 
 export const LoginUserDocument = gql`
-    mutation LoginUser($options: UsernamePasswordInput!) {
-  login(options: $options) {
+    mutation LoginUser($usernameOrEmail: String!, $password: String!) {
+  login(usernameOrEmail: $usernameOrEmail, password: $password) {
     errors {
       field
       message
@@ -155,7 +159,8 @@ export type LoginUserMutationFn = Apollo.MutationFunction<LoginUserMutation, Log
  * @example
  * const [loginUserMutation, { data, loading, error }] = useLoginUserMutation({
  *   variables: {
- *      options: // value for 'options'
+ *      usernameOrEmail: // value for 'usernameOrEmail'
+ *      password: // value for 'password'
  *   },
  * });
  */

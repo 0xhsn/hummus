@@ -19,13 +19,19 @@ import { useQuery, gql, useMutation } from '@apollo/client';
 import { useRegisterUserMutation } from '../../gql/graphql';
 import { useRouter } from 'next/navigation'
 
+const GET_ME = gql`
+  query Me {
+    me {
+      id
+      username
+    }
+  }
+`;
+
 const formSchema = z.object({
-  username: z.string().min(2, {
-    message: "Username must be at least 2 characters.",
-  }),
-  password: z.string().min(2, {
-    message: "Password must be at least 2 characters.",
-  }),
+  username: z.string(),
+  email: z.string(),
+  password: z.string(),
   confirm: z.string(),
 }).refine((data) => data.password === data.confirm, {
   message: "Passwords don't match",
@@ -44,6 +50,7 @@ export default function Page() {
     resolver: zodResolver(formSchema),
     defaultValues: {
       username: "",
+      email: "",
       password: "",
       confirm: ""
     },
@@ -58,6 +65,7 @@ export default function Page() {
       variables: {
         options: {
           username: values.username,
+          email: values.email,
           password: values.password,
         }
       },
@@ -93,6 +101,19 @@ export default function Page() {
               <FormLabel>Username</FormLabel>
               <FormControl>
                 <Input placeholder="Enter Username" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="email"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Email</FormLabel>
+              <FormControl>
+                <Input type="email" placeholder="Enter Email" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>

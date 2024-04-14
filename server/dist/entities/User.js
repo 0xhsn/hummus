@@ -40,6 +40,11 @@ __decorate([
     __metadata("design:type", String)
 ], User.prototype, "username", void 0);
 __decorate([
+    (0, type_graphql_1.Field)(() => String, { nullable: true }),
+    (0, core_1.Property)({ type: "text", unique: true, nullable: true }),
+    __metadata("design:type", String)
+], User.prototype, "email", void 0);
+__decorate([
     (0, core_1.Property)({ type: "text" }),
     __metadata("design:type", String)
 ], User.prototype, "password", void 0);
