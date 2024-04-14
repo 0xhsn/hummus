@@ -29,7 +29,7 @@ const GET_ME = gql`
 `;
 
 const formSchema = z.object({
-  username: z.string(),
+  usernameOrEmail: z.string(),
   password: z.string(),
 });
 
@@ -44,7 +44,7 @@ export default function Page() {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      username: "",
+      usernameOrEmail: "",
       password: "",
     },
   })
@@ -56,10 +56,8 @@ export default function Page() {
     console.log(values)
     const response = await loginUser({
       variables: {
-        options: {
-          username: values.username,
-          password: values.password,
-        }
+        usernameOrEmail:values.usernameOrEmail,
+        password: values.password,
       },
       refetchQueries: [{ query: GET_ME }],
     });
@@ -87,12 +85,12 @@ export default function Page() {
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
         <FormField
           control={form.control}
-          name="username"
+          name="usernameOrEmail"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Username</FormLabel>
+              <FormLabel>Username or Email</FormLabel>
               <FormControl>
-                <Input placeholder="Enter Username" {...field} />
+                <Input placeholder="Enter Username or Email" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>

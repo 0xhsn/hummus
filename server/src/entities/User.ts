@@ -20,6 +20,10 @@ export class User {
   @Property({ type: "text", unique: true })
   username!: string;
 
+  @Field(() => String, { nullable: true }) // nullable: true makes it optional in GraphQL
+  @Property({ type: "text", unique: true, nullable: true })
+  email?: string;
+
   @Property({ type: "text" })
   password!: string;
 }
