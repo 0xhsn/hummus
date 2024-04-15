@@ -133,3 +133,18 @@ req.session.userId = user.id;
 ```js
 req.session = { userId: 1 }
 ```
+
+## TODO: refactor
+- SSR
+- GraphQL Fragments
+  - Regular User
+  - Regular Error
+- Jest
+- Bun.js
+- GitHub Actions
+  - Linting
+  - Secrets
+- Better error messages for validation
+  - Email
+  - Password
+  - Username
