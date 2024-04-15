@@ -8,7 +8,7 @@ import { HelloResolver } from "./resolvers/hello";
 import { PostResolver } from "./resolvers/post";
 import { UserResolver } from "./resolvers/user";
 import session from "express-session";
-import IORedis from 'ioredis';
+import Redis from 'ioredis';
 import RedisStore from "connect-redis";
 import cors from 'cors';
 
@@ -18,10 +18,10 @@ const main = async () => {
 
   const app = express();
 
-  const redisClient = new IORedis(process.env.REDIS_URL || "redis://127.0.0.1:6379");
+  const redis = new Redis(process.env.REDIS_URL || "redis://127.0.0.1:6379");
 
   let redisStore = new (RedisStore as any)({
-    client: redisClient,
+    client: redis,
   })
 
   app.use(
@@ -45,7 +45,7 @@ const main = async () => {
       resolvers: [HelloResolver, PostResolver, UserResolver],
       validate: false,
     }),
-    context: ({ req, res }) => ({ em: orm.em, req, res }),
+    context: ({ req, res }) => ({ em: orm.em, req, res, redis }),
   });
 
   app.use(cors({

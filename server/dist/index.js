@@ -20,9 +20,9 @@ const main = async () => {
     const orm = await core_1.MikroORM.init(mikro_orm_config_1.default);
     await orm.getMigrator().up();
     const app = (0, express_1.default)();
-    const redisClient = new ioredis_1.default(process.env.REDIS_URL || "redis://127.0.0.1:6379");
+    const redis = new ioredis_1.default(process.env.REDIS_URL || "redis://127.0.0.1:6379");
     let redisStore = new connect_redis_1.default({
-        client: redisClient,
+        client: redis,
     });
     app.use((0, express_session_1.default)({
         name: constants_1.COOKIE_NAME,
@@ -42,7 +42,7 @@ const main = async () => {
             resolvers: [hello_1.HelloResolver, post_1.PostResolver, user_1.UserResolver],
             validate: false,
         }),
-        context: ({ req, res }) => ({ em: orm.em, req, res }),
+        context: ({ req, res }) => ({ em: orm.em, req, res, redis }),
     });
     app.use((0, cors_1.default)({
         origin: 'http://localhost:3000',
