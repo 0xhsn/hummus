@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useQuery, gql, useMutation } from "@apollo/client";
-import { useRouter, usePathname, useSearchParams } from "next/navigation";
+import { useRouter, usePathname, useSearchParams, redirect, notFound } from "next/navigation";
 import { NextPageContext } from "next";
 import { useChangePasswordMutation } from "@/gql/graphql";
 import { useState } from "react";
@@ -41,6 +41,7 @@ type FormFields = keyof z.infer<typeof formSchema>;
 export default function Page() {
   const searchParams = useSearchParams();
   const token = searchParams.get("token");
+  const uuidFormat =  /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/.test(token as string);
   const router = useRouter();
   const [tokenErr, setTokenErr] = useState(false);
 
@@ -85,6 +86,10 @@ export default function Page() {
       router.push("/");
     }
   };
+
+  if (!token || !uuidFormat) {
+    notFound();
+  }
 
   return (
     <main className="flex flex-col items-center justify-between p-24">
