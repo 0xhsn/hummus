@@ -7,7 +7,7 @@ import { ApolloWrapper } from "./ApolloWrapper";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "reddit",
+  title: "Reddit",
   description: "wanna be full-stack dev",
 };
 
