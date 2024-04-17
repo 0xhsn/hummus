@@ -148,3 +148,6 @@ req.session = { userId: 1 }
   - Email
   - Password
   - Username
+- Deployment
+  - neon?
+  - vercel?

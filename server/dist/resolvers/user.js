@@ -51,33 +51,26 @@ UserResponse = __decorate([
     (0, type_graphql_1.ObjectType)()
 ], UserResponse);
 let UserResolver = class UserResolver {
-    async me({ req, em }) {
+    me({ req }) {
         if (!req.session.userId) {
             return null;
         }
-        const user = await em.findOne(User_1.User, { id: req.session.userId });
-        return user;
+        return User_1.User.findOne({ where: { id: req.session.userId } });
     }
-    async register(options, { em, req }) {
+    async register(options, { req }) {
         const errors = (0, validateRegister_1.validateRegister)(options);
         if (errors) {
             return { errors };
         }
         const hashedPassword = await argon2_1.default.hash(options.password);
-        let user;
         try {
-            const result = await em
-                .createQueryBuilder(User_1.User)
-                .getKnexQuery()
-                .insert({
+            const user = await User_1.User.create({
                 username: options.username,
                 email: options.email,
-                password: hashedPassword,
-                created_at: new Date(),
-                updated_at: new Date(),
-            })
-                .returning("*");
-            user = result[0];
+                password: hashedPassword
+            }).save();
+            req.session.userId = user.id;
+            return { user };
         }
         catch (err) {
             if (err.code === "23505") {
@@ -85,21 +78,19 @@ let UserResolver = class UserResolver {
                     errors: [
                         {
                             field: "username",
-                            message: "already taken",
+                            message: "username already taken"
                         },
                     ],
                 };
             }
+            console.error("Registration error: ", err);
+            throw new Error("Registration failed");
         }
-        req.session.userId = user.id;
-        return {
-            user,
-        };
     }
-    async login(usernameOrEmail, password, { em, req }) {
-        const user = await em.findOne(User_1.User, usernameOrEmail.includes("@")
-            ? { email: usernameOrEmail }
-            : { username: usernameOrEmail });
+    async login(usernameOrEmail, password, { req }) {
+        const user = await User_1.User.findOne(usernameOrEmail.includes("@")
+            ? { where: { email: usernameOrEmail } }
+            : { where: { username: usernameOrEmail } });
         if (!user) {
             return {
                 errors: [
@@ -139,17 +130,17 @@ let UserResolver = class UserResolver {
             user,
         };
     }
-    async forgotPassword(email, { em, redis }) {
-        const user = await em.findOne(User_1.User, { email });
+    async forgotPassword(email, { redis }) {
+        const user = await User_1.User.findOne({ where: { email: email } });
         if (!user) {
             return true;
         }
         const token = (0, uuid_1.v4)();
-        redis.set(constants_1.FORGET_PASSWORD_PREFIX + token, user.id, 'EX', 1000 * 60 * 60 * 24 * 3);
+        redis.set(constants_1.FORGET_PASSWORD_PREFIX + token, user.id, "EX", 1000 * 60 * 60 * 24 * 3);
         await (0, sendEmail_1.sendEmail)(email, `<a href="http://localhost:3000/change-password?token=${token}">Reset Password</a>`);
         return true;
     }
-    async changePassword(token, newPassword, { redis, em, req }) {
+    async changePassword(token, newPassword, { redis, req }) {
         const validatePassword = (password) => {
             const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
             return passwordRegex.test(password);
@@ -170,29 +161,31 @@ let UserResolver = class UserResolver {
             return {
                 errors: [
                     {
-                        field: 'token',
-                        message: 'expired',
-                    }
-                ]
+                        field: "token",
+                        message: "expired",
+                    },
+                ],
             };
         }
-        const user = await em.findOne(User_1.User, { id: parseInt(userId) });
+        const userIdNum = parseInt(userId);
+        const user = await User_1.User.findOne({ where: { id: userIdNum } });
         if (!user) {
             return {
                 errors: [
                     {
-                        field: 'token',
-                        message: 'user no longer exist',
-                    }
-                ]
+                        field: "token",
+                        message: "user no longer exist",
+                    },
+                ],
             };
         }
-        user.password = await argon2_1.default.hash(newPassword);
-        await em.persistAndFlush(user);
+        User_1.User.update({ id: userIdNum }, {
+            password: await argon2_1.default.hash(newPassword),
+        });
         await redis.del(key);
         req.session.userId = user.id;
         return {
-            user
+            user,
         };
     }
     logout({ req, res }) {
@@ -213,7 +206,7 @@ __decorate([
     __param(0, (0, type_graphql_1.Ctx)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", Promise)
+    __metadata("design:returntype", void 0)
 ], UserResolver.prototype, "me", null);
 __decorate([
     (0, type_graphql_1.Mutation)(() => UserResponse),
@@ -242,8 +235,8 @@ __decorate([
 ], UserResolver.prototype, "forgotPassword", null);
 __decorate([
     (0, type_graphql_1.Mutation)(() => UserResponse),
-    __param(0, (0, type_graphql_1.Arg)('token')),
-    __param(1, (0, type_graphql_1.Arg)('newPassword')),
+    __param(0, (0, type_graphql_1.Arg)("token")),
+    __param(1, (0, type_graphql_1.Arg)("newPassword")),
     __param(2, (0, type_graphql_1.Ctx)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String, String, Object]),
