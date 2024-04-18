@@ -136,6 +136,8 @@ req.session = { userId: 1 }
 
 ## TODO: refactor
 - SSR
+- Global Error Handling
+  - Read [this](https://www.apollographql.com/docs/apollo-server/data/errors/)
 - GraphQL Fragments
   - Regular User
   - Regular Error
