@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useLoginUserMutation, useMeQuery } from "../../gql/graphql";
-import { useRouter } from "next/navigation";
+import { ReadonlyURLSearchParams, useRouter, useSearchParams } from "next/navigation";
 import { useQuery, gql } from "@apollo/client";
 import Link from "next/link";
 
@@ -39,6 +39,8 @@ type FormFields = keyof z.infer<typeof formSchema>;
 export default function Page() {
   const [loginUser, { data, loading, error }] = useLoginUserMutation();
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const nxt = searchParams.get("next");
 
   // 1. Define your form.
   const form = useForm<z.infer<typeof formSchema>>({
@@ -72,7 +74,12 @@ export default function Page() {
         });
       });
     } else if (response.data?.login.user) {
+      if (typeof nxt === 'string'){
+        router.push(nxt)
+      }
+      else {
       router.push("/");
+      }
     }
   };
 
