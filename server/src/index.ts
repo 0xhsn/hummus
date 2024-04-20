@@ -10,22 +10,9 @@ import session from "express-session";
 import Redis from "ioredis";
 import RedisStore from "connect-redis";
 import cors from "cors";
-import { DataSource } from "typeorm";
-import { User } from "./entities/User";
-import { Post } from "./entities/Post";
+import { appDataSource } from "./utils/appDataSource";
 
 const main = async () => {
-  const appDataSource = new DataSource({
-    type: "postgres",
-    host: "localhost",
-    port: 5432,
-    username: "macdoos",
-    password: "macdoos",
-    database: "reddit",
-    entities: [Post, User],
-    synchronize: true,
-    logging: true,
-  });
 
   appDataSource
     .initialize()

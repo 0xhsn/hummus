@@ -47,7 +47,11 @@ export default function Home() {
   const client = useApolloClient();
   const [logout, { reset, loading: logoutLoading }] = useLogoutUserMutation();
   const { data, loading } = useMeQuery();
-  const { data: postsData, loading: loadingPosts } = useGetPostsQuery();
+  const { data: postsData, loading: loadingPosts } = useGetPostsQuery({
+    variables: {
+      limit: 10,
+    }
+  });
 
   console.log("posts", postsData);
   const handleLogout = () => {
