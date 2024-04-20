@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-require("reflect-metadata");
+exports.main = void 0;
 const constants_1 = require("./constants");
 const express_1 = __importDefault(require("express"));
 const apollo_server_express_1 = require("apollo-server-express");
@@ -15,9 +15,22 @@ const express_session_1 = __importDefault(require("express-session"));
 const ioredis_1 = __importDefault(require("ioredis"));
 const connect_redis_1 = __importDefault(require("connect-redis"));
 const cors_1 = __importDefault(require("cors"));
-const appDataSource_1 = require("./utils/appDataSource");
+const typeorm_1 = require("typeorm");
+const User_1 = require("./entities/User");
+const Post_1 = require("./entities/Post");
 const main = async () => {
-    appDataSource_1.appDataSource
+    const appDataSource = new typeorm_1.DataSource({
+        type: "postgres",
+        host: "localhost",
+        port: 5432,
+        username: "macdoos",
+        password: "macdoos",
+        database: "reddit",
+        entities: [Post_1.Post, User_1.User],
+        synchronize: true,
+        logging: true,
+    });
+    appDataSource
         .initialize()
         .then(() => {
     })
@@ -57,5 +70,5 @@ const main = async () => {
         console.log("server started on localhost:4000");
     });
 };
-main();
-//# sourceMappingURL=index.js.map
+exports.main = main;
+//# sourceMappingURL=main.js.map

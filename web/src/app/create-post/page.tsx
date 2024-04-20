@@ -28,6 +28,18 @@ const formSchema = z.object({
   text: z.string(),
 });
 
+const GET_POSTS = gql`
+  query GetPosts($limit: Int!, $cursor: String) {
+    posts(cursor: $cursor, limit: $limit) {
+      id
+      title
+      text
+      createdAt
+      updatedAt
+    }
+  }
+`;
+
 export default function Page() {
   useIsAuth();
   const [createPost, { data, loading, error }] = useCreatePostMutation();
@@ -53,7 +65,10 @@ export default function Page() {
           title: values.title,
           text: values.text,
         }
-      }
+      },
+      refetchQueries: [{ query: GET_POSTS, variables: {
+        limit: 10
+      } }],
     });
     router.push('/');
   };
