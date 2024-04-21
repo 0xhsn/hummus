@@ -154,3 +154,7 @@ req.session = { userId: 1 }
   - neon?
   - vercel?
 - https://kysely.dev/ ??
+- support app 
+  - a tool to make commands directly on production
+  - SQL runner
+- column names to snake case `creator_id`

@@ -6,7 +6,8 @@
   "scripts": {
     "watch": "tsc -w",
     "dev": "nodemon dist/index.js",
-    "start": "node dist/index.js"
+    "start": "node dist/index.js",
+    "migrate": "ts-node ./node_modules/typeorm/cli.js migration:run -d src/utils/appDataSource.ts"
   },
   "keywords": [],
   "author": "",
