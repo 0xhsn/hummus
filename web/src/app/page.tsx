@@ -19,7 +19,7 @@ import {
   useMeQuery,
 } from "@/gql/graphql";
 import { gql, useApolloClient } from "@apollo/client";
-import { Loader2, SquarePen } from "lucide-react";
+import { ChevronDown, Loader2, SquarePen } from "lucide-react";
 import {
   Card,
   CardContent,
@@ -30,7 +30,7 @@ import {
 } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { AlertCircle } from "lucide-react"
+import { AlertCircle } from "lucide-react";
 
 import dayjs from "dayjs";
 
@@ -42,21 +42,23 @@ interface Post {
   updatedAt: string;
 }
 
-interface GetPostsQuery {
-  posts: Post[];
-}
-
 export default function Home() {
   const client = useApolloClient();
+
   const [logout, { reset, loading: logoutLoading }] = useLogoutUserMutation();
   const { data, loading } = useMeQuery();
-  const { data: postsData, loading: loadingPosts } = useGetPostsQuery({
+  const {
+    data: postsData,
+    loading: loadingPosts,
+    fetchMore,
+  } = useGetPostsQuery({
     variables: {
       limit: 10,
+      cursor: null as null | string,
     },
+    notifyOnNetworkStatusChange: true,
   });
 
-  console.log("posts", postsData);
   const handleLogout = () => {
     logout({
       onCompleted: () => {
@@ -71,6 +73,26 @@ export default function Home() {
           `,
           data: { me: null },
         });
+      },
+    });
+  };
+
+  const handleLoadMore = () => {
+    fetchMore({
+      variables: {
+        cursor: postsData?.posts[postsData.posts.length - 1].createdAt,
+      },
+      updateQuery: (prev, { fetchMoreResult }) => {
+        if (!fetchMoreResult) return prev;
+        const morePosts = fetchMoreResult.posts.length > 10;
+        if (morePosts) {
+          fetchMoreResult.posts.pop(); // Assuming the extra post is the last one
+        }
+        return {
+          ...prev,
+          posts: [...prev.posts, ...fetchMoreResult.posts],
+          hasMore: morePosts,
+        };
       },
     });
   };
@@ -174,7 +196,7 @@ export default function Home() {
               </div>
             </div>
           </div>
-        ) : true && (
+        ) : (
           <Alert variant="destructive">
             <AlertCircle className="h-4 w-4" />
             <AlertTitle>Error fetching posts</AlertTitle>
@@ -184,6 +206,14 @@ export default function Home() {
           </Alert>
         )}
       </div>
+      <Button
+        className="mb-3"
+        variant="outline"
+        size="icon"
+        onClick={handleLoadMore}
+      >
+        <ChevronDown className="h-4 w-4" />
+      </Button>
     </main>
   );
 }
