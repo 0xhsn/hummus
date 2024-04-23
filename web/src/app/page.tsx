@@ -31,6 +31,15 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { AlertCircle } from "lucide-react";
+import * as React from "react";
+import { Moon, Sun } from "lucide-react";
+import { useTheme } from "next-themes";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 import dayjs from "dayjs";
 
@@ -44,6 +53,7 @@ interface Post {
 
 export default function Home() {
   const client = useApolloClient();
+  const { setTheme } = useTheme();
 
   const [logout, { reset, loading: logoutLoading }] = useLogoutUserMutation();
   const { data, loading } = useMeQuery();
@@ -117,6 +127,28 @@ export default function Home() {
             </Button>
           </NavigationMenuItem>
           <NavigationMenuItem>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" size="icon">
+                  <Sun className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
+                  <Moon className="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+                  <span className="sr-only">Toggle theme</span>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem onClick={() => setTheme("light")}>
+                  Light
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setTheme("dark")}>
+                  Dark
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setTheme("system")}>
+                  System
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </NavigationMenuItem>
+          <NavigationMenuItem>
             <Button onClick={handleLogout} variant="outline">
               {logoutLoading ? (
                 <Loader2 className="h-4 w-4 animate-spin" />
@@ -148,6 +180,28 @@ export default function Home() {
               <Button variant="ghost">Register</Button>
             </Link>
           </NavigationMenuItem>
+          <NavigationMenuItem>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" size="icon">
+                  <Sun className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
+                  <Moon className="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+                  <span className="sr-only">Toggle theme</span>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem onClick={() => setTheme("light")}>
+                  Light
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setTheme("dark")}>
+                  Dark
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setTheme("system")}>
+                  System
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </NavigationMenuItem>
         </NavigationMenuList>
       </NavigationMenu>
     );
@@ -160,7 +214,7 @@ export default function Home() {
       <div className="font-mono flex flex-wrap justify-center">
         {postsData && postsData.posts.length > 0 ? (
           postsData.posts.map((post: Post) => (
-            <Card className="w-[350px] m-4" key={post.title}> 
+            <Card className="w-[350px] m-4" key={post.title}>
               <CardHeader>
                 <CardTitle>{post.title}</CardTitle>
                 <CardDescription>
