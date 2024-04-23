@@ -53,7 +53,7 @@ export default function Home() {
     fetchMore,
   } = useGetPostsQuery({
     variables: {
-      limit: 10,
+      limit: 8,
       cursor: null as null | string,
     },
     notifyOnNetworkStatusChange: true,
@@ -84,7 +84,7 @@ export default function Home() {
       },
       updateQuery: (prev, { fetchMoreResult }) => {
         if (!fetchMoreResult) return prev;
-        const morePosts = fetchMoreResult.posts.length > 10;
+        const morePosts = fetchMoreResult.posts.length > 8;
         if (morePosts) {
           fetchMoreResult.posts.pop(); // Assuming the extra post is the last one
         }
@@ -157,10 +157,10 @@ export default function Home() {
       <div className="w-full font-mono text-sm p-5 flex justify-end items-center">
         {body}
       </div>
-      <div className="font-mono">
+      <div className="font-mono flex flex-wrap justify-center">
         {postsData && postsData.posts.length > 0 ? (
           postsData.posts.map((post: Post) => (
-            <Card className="w-[350px] mb-4" key={post.title}>
+            <Card className="w-[350px] m-4" key={post.title}> 
               <CardHeader>
                 <CardTitle>{post.title}</CardTitle>
                 <CardDescription>
@@ -207,7 +207,7 @@ export default function Home() {
         )}
       </div>
       <Button
-        className="mb-3"
+        className="m-3"
         variant="outline"
         size="icon"
         onClick={handleLoadMore}
