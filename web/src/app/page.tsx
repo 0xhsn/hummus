@@ -19,7 +19,7 @@ import {
   useMeQuery,
 } from "@/gql/graphql";
 import { gql, useApolloClient } from "@apollo/client";
-import { ChevronDown, Loader2, SquarePen } from "lucide-react";
+import { ChevronDown, Ellipsis, Loader2, SquarePen } from "lucide-react";
 import {
   Card,
   CardContent,
@@ -90,22 +90,23 @@ export default function Home() {
   const handleLoadMore = () => {
     fetchMore({
       variables: {
-        cursor: postsData?.posts[postsData.posts.length - 1].createdAt,
+        cursor: postsData?.posts.posts[postsData.posts.posts.length - 1].createdAt,
       },
       updateQuery: (prev, { fetchMoreResult }) => {
         if (!fetchMoreResult) return prev;
-        const morePosts = fetchMoreResult.posts.length > 8;
-        if (morePosts) {
-          fetchMoreResult.posts.pop(); // Assuming the extra post is the last one
-        }
+  
         return {
           ...prev,
-          posts: [...prev.posts, ...fetchMoreResult.posts],
-          hasMore: morePosts,
+          posts: {
+            ...prev.posts,
+            posts: [...prev.posts.posts, ...fetchMoreResult.posts.posts],
+            hasMore: fetchMoreResult.posts.hasMore, // Directly use hasMore from the backend
+          },
         };
       },
     });
   };
+  
 
   const body =
     !data || loading ? (
@@ -212,8 +213,8 @@ export default function Home() {
         {body}
       </div>
       <div className="font-mono flex flex-wrap justify-center">
-        {postsData && postsData.posts.length > 0 ? (
-          postsData.posts.map((post: Post) => (
+        {postsData && postsData.posts.posts.length > 0 ? (
+          postsData.posts.posts.map((post: Post) => (
             <Card className="w-[350px] m-4" key={post.title}>
               <CardHeader>
                 <CardTitle>{post.title}</CardTitle>
@@ -260,14 +261,16 @@ export default function Home() {
           </Alert>
         )}
       </div>
-      <Button
-        className="m-3"
-        variant="outline"
-        size="icon"
-        onClick={handleLoadMore}
-      >
-        <ChevronDown className="h-4 w-4" />
-      </Button>
+      {postsData && postsData.posts.hasMore ? (
+        <Button
+          className="m-3"
+          variant="outline"
+          size="icon"
+          onClick={handleLoadMore}
+        >
+          <ChevronDown className="h-4 w-4" />
+        </Button>
+      ) : <Ellipsis className="mb-3 text-gray-300"/>}
     </main>
   );
 }

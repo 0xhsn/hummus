@@ -75,6 +75,12 @@ export type MutationUpdatePostArgs = {
   title?: InputMaybe<Scalars['String']['input']>;
 };
 
+export type PaginatedPosts = {
+  __typename?: 'PaginatedPosts';
+  hasMore: Scalars['Boolean']['output'];
+  posts: Array<Post>;
+};
+
 export type Post = {
   __typename?: 'Post';
   createdAt: Scalars['String']['output'];
@@ -96,7 +102,7 @@ export type Query = {
   hello: Scalars['String']['output'];
   me?: Maybe<User>;
   post?: Maybe<Post>;
-  posts: Array<Post>;
+  posts: PaginatedPosts;
 };
 
 
@@ -184,7 +190,7 @@ export type GetPostsQueryVariables = Exact<{
 }>;
 
 
-export type GetPostsQuery = { __typename?: 'Query', posts: Array<{ __typename?: 'Post', id: number, title: string, text: string, createdAt: string, updatedAt: string }> };
+export type GetPostsQuery = { __typename?: 'Query', posts: { __typename?: 'PaginatedPosts', hasMore: boolean, posts: Array<{ __typename?: 'Post', id: number, title: string, text: string, createdAt: string, updatedAt: string }> } };
 
 
 export const ChangePasswordDocument = gql`
@@ -452,11 +458,14 @@ export type MeQueryResult = Apollo.QueryResult<MeQuery, MeQueryVariables>;
 export const GetPostsDocument = gql`
     query GetPosts($limit: Int!, $cursor: String) {
   posts(cursor: $cursor, limit: $limit) {
-    id
-    title
-    text
-    createdAt
-    updatedAt
+    hasMore
+    posts {
+      id
+      title
+      text
+      createdAt
+      updatedAt
+    }
   }
 }
     `;
