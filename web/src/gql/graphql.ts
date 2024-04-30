@@ -84,6 +84,7 @@ export type PaginatedPosts = {
 export type Post = {
   __typename?: 'Post';
   createdAt: Scalars['String']['output'];
+  creator: User;
   creatorId: Scalars['Float']['output'];
   id: Scalars['Float']['output'];
   points: Scalars['Float']['output'];
@@ -190,7 +191,7 @@ export type GetPostsQueryVariables = Exact<{
 }>;
 
 
-export type GetPostsQuery = { __typename?: 'Query', posts: { __typename?: 'PaginatedPosts', hasMore: boolean, posts: Array<{ __typename?: 'Post', id: number, title: string, text: string, createdAt: string, updatedAt: string }> } };
+export type GetPostsQuery = { __typename?: 'Query', posts: { __typename?: 'PaginatedPosts', hasMore: boolean, posts: Array<{ __typename?: 'Post', id: number, title: string, text: string, createdAt: string, updatedAt: string, creator: { __typename?: 'User', id: number, username: string } }> } };
 
 
 export const ChangePasswordDocument = gql`
@@ -465,6 +466,10 @@ export const GetPostsDocument = gql`
       text
       createdAt
       updatedAt
+      creator {
+        id
+        username
+      }
     }
   }
 }
