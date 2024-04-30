@@ -1,4 +1,15 @@
-import { Query, Resolver, Arg, Int, Mutation, InputType, Field, Ctx, UseMiddleware, ObjectType } from "type-graphql";
+import {
+  Query,
+  Resolver,
+  Arg,
+  Int,
+  Mutation,
+  InputType,
+  Field,
+  Ctx,
+  UseMiddleware,
+  ObjectType,
+} from "type-graphql";
 import { Post } from "../entities/Post";
 import { MyContext } from "src/types";
 import { isAuth } from "../middleware/isAuth";
@@ -7,47 +18,45 @@ import { appDataSource } from "../utils/appDataSource";
 @InputType()
 class PostInput {
   @Field()
-  title: string
+  title: string;
 
   @Field()
-  text: string
+  text: string;
 }
 
 @ObjectType()
 class PaginatedPosts {
   @Field(() => [Post])
-  posts: Post[]
+  posts: Post[];
 
   @Field()
   hasMore: boolean;
 }
 
-
 @Resolver()
 export class PostResolver {
   @Query(() => PaginatedPosts)
   async posts(
-    @Arg('limit', () => Int) limit: number,
-    @Arg('cursor', () => String, { nullable: true }) cursor: string
+    @Arg("limit", () => Int) limit: number,
+    @Arg("cursor", () => String, { nullable: true }) cursor: string | null
   ): Promise<PaginatedPosts> {
-    const real_limit = Math.min(50, limit);
+    const realLimit = Math.min(50, limit);
     const qb = appDataSource
       .getRepository(Post)
-      .createQueryBuilder('p')
-      .orderBy('"createdAt"', "DESC")
-      .take(real_limit + 1)
-    
+      .createQueryBuilder("p")
+      .leftJoinAndSelect("p.creator", "u") // Ensure 'u' maps to the alias of the joined table
+      .orderBy("p.createdAt", "DESC") // Use 'p.createdAt' to clarify which table the column belongs to
+      .take(realLimit + 1);
+
     if (cursor) {
-      qb.where('"createdAt" < :cursor', {
-        cursor: new Date(parseInt(cursor)),
-      });
+      qb.where("p.createdAt < :cursor", { cursor: new Date(parseInt(cursor)) });
     }
 
     const posts = await qb.getMany();
 
     return {
-      posts: posts.slice(0, real_limit), 
-      hasMore: posts.length === real_limit + 1
+      posts: posts.slice(0, realLimit),
+      hasMore: posts.length === realLimit + 1,
     };
   }
 
@@ -60,11 +69,12 @@ export class PostResolver {
   @UseMiddleware(isAuth)
   async createPost(
     @Arg("input") input: PostInput,
-    @Ctx() { req }: MyContext ): Promise<Post> {
-    return Post.create({ 
+    @Ctx() { req }: MyContext
+  ): Promise<Post> {
+    return Post.create({
       ...input,
-      creatorId: req.session.userId
-     }).save();
+      creatorId: req.session.userId,
+    }).save();
   }
 
   @Mutation(() => Post, { nullable: true })

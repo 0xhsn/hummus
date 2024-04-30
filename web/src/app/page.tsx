@@ -41,15 +41,23 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-import dayjs from "dayjs";
+import { format } from "date-fns";
 
 interface Post {
+  creator: any;
   id: number;
   title: string;
   text: string;
   createdAt: string;
   updatedAt: string;
 }
+
+const formatDateTime = (timestamp: string) => {
+  const date = new Date(Number(timestamp));
+  return !isNaN(date.getTime())
+    ? format(date, "yyyy-MM-dd HH:mm:ss")
+    : "Invalid date";
+};
 
 export default function Home() {
   const client = useApolloClient();
@@ -90,11 +98,12 @@ export default function Home() {
   const handleLoadMore = () => {
     fetchMore({
       variables: {
-        cursor: postsData?.posts.posts[postsData.posts.posts.length - 1].createdAt,
+        cursor:
+          postsData?.posts.posts[postsData.posts.posts.length - 1].createdAt,
       },
       updateQuery: (prev, { fetchMoreResult }) => {
         if (!fetchMoreResult) return prev;
-  
+
         return {
           ...prev,
           posts: {
@@ -106,7 +115,6 @@ export default function Home() {
       },
     });
   };
-  
 
   const body =
     !data || loading ? (
@@ -219,9 +227,8 @@ export default function Home() {
               <CardHeader>
                 <CardTitle>{post.title}</CardTitle>
                 <CardDescription>
-                  {dayjs(post.createdAt, "YYYY-MM-DD HH:mm:ss.SSSSSS").format(
-                    "YYYY-MM-DD HH:mm:ss"
-                  )}
+                  <p>@{post.creator.username}</p>
+                  <p>{formatDateTime(post.createdAt)} </p>
                 </CardDescription>
               </CardHeader>
               <CardContent>{post.text}</CardContent>
@@ -270,7 +277,9 @@ export default function Home() {
         >
           <ChevronDown className="h-4 w-4" />
         </Button>
-      ) : <Ellipsis className="mb-3 text-gray-300"/>}
+      ) : (
+        <Ellipsis className="mb-3 text-gray-300" />
+      )}
     </main>
   );
 }
