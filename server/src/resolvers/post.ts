@@ -14,6 +14,7 @@ import { Post } from "../entities/Post";
 import { MyContext } from "src/types";
 import { isAuth } from "../middleware/isAuth";
 import { appDataSource } from "../utils/appDataSource";
+import { Updoot } from "../entities/Updoot";
 
 @InputType()
 class PostInput {
@@ -44,8 +45,8 @@ export class PostResolver {
     const qb = appDataSource
       .getRepository(Post)
       .createQueryBuilder("p")
-      .leftJoinAndSelect("p.creator", "u") // Ensure 'u' maps to the alias of the joined table
-      .orderBy("p.createdAt", "DESC") // Use 'p.createdAt' to clarify which table the column belongs to
+      .leftJoinAndSelect("p.creator", "u")
+      .orderBy("p.createdAt", "DESC")
       .take(realLimit + 1);
 
     if (cursor) {
@@ -95,6 +96,62 @@ export class PostResolver {
   @Mutation(() => Boolean)
   async deletePost(@Arg("id", () => Int) id: number): Promise<boolean> {
     await Post.delete(id);
+    return true;
+  }
+
+  @Mutation(() => Boolean)
+  @UseMiddleware(isAuth)
+  async vote(
+    @Arg("postId", () => Int) postId: number,
+    @Arg("value", () => Int) value: number,
+    @Ctx() { req }: MyContext
+  ) {
+    const isUpdoot = value !== -1;
+    const realValue = isUpdoot ? 1 : -1;
+    const { userId } = req.session;
+
+    const updoot = await Updoot.findOne({ where: { postId, userId } });
+
+    if (updoot && updoot.value !== realValue) {
+      await appDataSource.transaction(async (tm) => {
+        await tm.query(
+          `
+    update updoot
+    set value = $1
+    where "postId" = $2 and "userId" = $3
+        `,
+          [realValue, postId, userId]
+        );
+
+        await tm.query(
+          `
+          update post
+          set points = points + $1
+          where id = $2
+        `,
+          [2 * realValue, postId]
+        );
+      });
+    } else if (!updoot) {
+      await appDataSource.transaction(async (tm) => {
+        await tm.query(
+          `
+    insert into updoot ("userId", "postId", value)
+    values ($1, $2, $3)
+        `,
+          [userId, postId, realValue]
+        );
+
+        await tm.query(
+          `
+    update post
+    set points = points + $1
+    where id = $2
+      `,
+          [realValue, postId]
+        );
+      });
+    }
     return true;
   }
 }

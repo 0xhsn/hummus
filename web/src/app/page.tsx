@@ -14,11 +14,14 @@ import {
 } from "@/components/ui/navigation-menu";
 import Link from "next/link";
 import {
+  GetPostsQuery,
+  VoteMutation,
   useGetPostsQuery,
   useLogoutUserMutation,
   useMeQuery,
+  useVoteMutation,
 } from "@/gql/graphql";
-import { gql, useApolloClient } from "@apollo/client";
+import { ApolloCache, gql, useApolloClient } from "@apollo/client";
 import { ChevronDown, Ellipsis, Loader2, SquarePen } from "lucide-react";
 import {
   Card,
@@ -32,7 +35,12 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { AlertCircle } from "lucide-react";
 import * as React from "react";
-import { MoonIcon, SunIcon } from "@radix-ui/react-icons";
+import {
+  MoonIcon,
+  SunIcon,
+  PlusCircledIcon,
+  MinusCircledIcon,
+} from "@radix-ui/react-icons";
 import { useTheme } from "next-themes";
 import {
   DropdownMenu,
@@ -44,12 +52,16 @@ import {
 import { format } from "date-fns";
 
 interface Post {
-  creator: any;
   id: number;
+  points: number;
   title: string;
   text: string;
   createdAt: string;
   updatedAt: string;
+  creator: {
+    id: number;
+    username: string;
+  };
 }
 
 const formatDateTime = (timestamp: string) => {
@@ -64,6 +76,8 @@ export default function Home() {
   const { setTheme } = useTheme();
 
   const [logout, { reset, loading: logoutLoading }] = useLogoutUserMutation();
+  const [vote] = useVoteMutation();
+
   const { data, loading } = useMeQuery();
   const {
     data: postsData,
@@ -75,7 +89,7 @@ export default function Home() {
       cursor: null as null | string,
     },
     notifyOnNetworkStatusChange: true,
-    fetchPolicy: "no-cache",
+    // fetchPolicy: "no-cache",
   });
 
   const handleLogout = () => {
@@ -117,6 +131,12 @@ export default function Home() {
     });
   };
 
+  const handleVote = async (postId: number, value: number) => {
+    await vote({
+      variables: { postId, value },
+    });
+  };
+  
   const body =
     !data || loading ? (
       <Loader2 className="h-4 w-4 animate-spin" />
@@ -194,8 +214,8 @@ export default function Home() {
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="outline" size="icon">
-                  <Sun className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
-                  <Moon className="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+                  <SunIcon className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
+                  <MoonIcon className="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
                   <span className="sr-only">Toggle theme</span>
                 </Button>
               </DropdownMenuTrigger>
@@ -233,6 +253,20 @@ export default function Home() {
                 </CardDescription>
               </CardHeader>
               <CardContent>{post.text}</CardContent>
+              <CardFooter>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="mr-2"
+                  onClick={() => handleVote(post.id, 1)}
+                >
+                  <PlusCircledIcon />
+                </Button>
+                <span className="mr-2">{post.points}</span>
+                <Button variant="outline" size="sm" onClick={() => handleVote(post.id, -1)}>
+                  <MinusCircledIcon />
+                </Button>
+              </CardFooter>
             </Card>
           ))
         ) : !postsData && loadingPosts ? (
