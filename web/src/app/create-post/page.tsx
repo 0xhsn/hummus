@@ -67,7 +67,8 @@ export default function Page() {
         }
       },
       refetchQueries: [{ query: GET_POSTS, variables: {
-        limit: 10
+        limit: 8,
+        cursor: null,
       } }],
     });
     router.push('/');
