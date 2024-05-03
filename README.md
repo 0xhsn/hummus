@@ -158,3 +158,9 @@ req.session = { userId: 1 }
   - a tool to make commands directly on production
   - SQL runner
 - column names to snake case `creator_id`
+- move into likes model instead of points
+  - twitter killer? :P
+- unify icons
+- invalidate queries
+  - on voting
+  - on posting

@@ -8,6 +8,7 @@ const Post_1 = require("../entities/Post");
 const User_1 = require("../entities/User");
 const typeorm_1 = require("typeorm");
 const path_1 = __importDefault(require("path"));
+const Updoot_1 = require("../entities/Updoot");
 exports.appDataSource = new typeorm_1.DataSource({
     type: "postgres",
     host: "localhost",
@@ -18,7 +19,7 @@ exports.appDataSource = new typeorm_1.DataSource({
     migrations: [
         path_1.default.join(__dirname, '../migrations/*')
     ],
-    entities: [Post_1.Post, User_1.User],
+    entities: [Post_1.Post, User_1.User, Updoot_1.Updoot],
     synchronize: true,
     logging: true,
 });
