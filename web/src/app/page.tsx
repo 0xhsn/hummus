@@ -16,6 +16,7 @@ import Link from "next/link";
 import {
   GetPostsQuery,
   VoteMutation,
+  useDeletePostMutation,
   useGetPostsQuery,
   useLogoutUserMutation,
   useMeQuery,
@@ -41,6 +42,7 @@ import {
   PlusCircledIcon,
   MinusCircledIcon,
   OpenInNewWindowIcon,
+  TrashIcon,
 } from "@radix-ui/react-icons";
 import { useTheme } from "next-themes";
 import {
@@ -51,6 +53,17 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 import { format } from "date-fns";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 interface Post {
   id: number;
@@ -93,23 +106,7 @@ export default function Home() {
     // fetchPolicy: "no-cache",
   });
 
-  const handleLogout = () => {
-    logout({
-      onCompleted: () => {
-        client.writeQuery({
-          query: gql`
-            query Me {
-              me {
-                id
-                username
-              }
-            }
-          `,
-          data: { me: null },
-        });
-      },
-    });
-  };
+  const [deletePost] = useDeletePostMutation();
 
   const handleLoadMore = () => {
     fetchMore({
@@ -134,7 +131,67 @@ export default function Home() {
 
   const handleVote = async (postId: number, value: number) => {
     await vote({
-      variables: { postId, value },
+      variables: { value, postId },
+      refetchQueries: [
+        {
+          query: gql`
+            query GetPosts($limit: Int!, $cursor: String) {
+              posts(limit: $limit, cursor: $cursor) {
+                hasMore
+                posts {
+                  id
+                  points
+                  title
+                  text
+                  createdAt
+                  updatedAt
+                  creator {
+                    id
+                    username
+                  }
+                }
+              }
+            }
+          `,
+          variables: {
+            limit: 8,
+            cursor: null,
+          },
+        },
+      ],
+    });
+  };
+
+  const handleDelete = async (postId: number) => {
+    await deletePost({
+      variables: { id: postId },
+      refetchQueries: [
+        {
+          query: gql`
+            query GetPosts($limit: Int!, $cursor: String) {
+              posts(limit: $limit, cursor: $cursor) {
+                hasMore
+                posts {
+                  id
+                  points
+                  title
+                  text
+                  createdAt
+                  updatedAt
+                  creator {
+                    id
+                    username
+                  }
+                }
+              }
+            }
+          `,
+          variables: {
+            limit: 8,
+            cursor: null,
+          },
+        },
+      ],
     });
   };
 
@@ -168,11 +225,45 @@ export default function Home() {
                 >
                   <MinusCircledIcon />
                 </Button>
-                <Link href="/post/[id]" as={`/post/${post.id}`} className="ml-auto">
-                  <Button variant="outline" size="sm" >
+                <Link
+                  href="/post/[id]"
+                  as={`/post/${post.id}`}
+                  className="ml-auto"
+                >
+                  <Button variant="outline" size="sm">
                     <OpenInNewWindowIcon />
                   </Button>
                 </Link>
+                {data?.me?.id === post.creator.id && (
+                  <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                      <Button variant="outline" size="sm" className="ml-2 hover:text-red-400">
+                        <TrashIcon />
+                      </Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>
+                          Are you absolutely sure?
+                        </AlertDialogTitle>
+                        <AlertDialogDescription>
+                          This action cannot be undone. This will permanently
+                          delete your post and remove your data from our
+                          servers.
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                        <AlertDialogAction
+                          onClick={() => handleDelete(post.id)}
+                          className="hover:bg-red-400"
+                        >
+                          Continue
+                        </AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
+                )}
               </CardFooter>
             </Card>
           ))
