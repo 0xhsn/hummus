@@ -40,6 +40,7 @@ import {
   SunIcon,
   PlusCircledIcon,
   MinusCircledIcon,
+  OpenInNewWindowIcon,
 } from "@radix-ui/react-icons";
 import { useTheme } from "next-themes";
 import {
@@ -136,123 +137,20 @@ export default function Home() {
       variables: { postId, value },
     });
   };
-  
-  const body =
-    !data || loading ? (
-      <Loader2 className="h-4 w-4 animate-spin" />
-    ) : data.me ? (
-      // User is logged in
-      <NavigationMenu>
-        <NavigationMenuList>
-          <NavigationMenuItem>
-            <Link href="/create-post" passHref>
-              <Button variant="ghost">
-                <SquarePen />
-              </Button>
-            </Link>
-          </NavigationMenuItem>
-          <NavigationMenuItem>
-            <Button variant="ghost" className="text-xl">
-              @{data.me.username}
-            </Button>
-          </NavigationMenuItem>
-          <NavigationMenuItem>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="outline" size="icon">
-                  <SunIcon className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
-                  <MoonIcon className="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
-                  <span className="sr-only">Toggle theme</span>
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuItem onClick={() => setTheme("light")}>
-                  Light
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setTheme("dark")}>
-                  Dark
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setTheme("system")}>
-                  System
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </NavigationMenuItem>
-          <NavigationMenuItem>
-            <Button onClick={handleLogout} variant="outline">
-              {logoutLoading ? (
-                <Loader2 className="h-4 w-4 animate-spin" />
-              ) : (
-                "Logout"
-              )}
-            </Button>
-          </NavigationMenuItem>
-        </NavigationMenuList>
-      </NavigationMenu>
-    ) : (
-      // User is not logged in
-      <NavigationMenu>
-        <NavigationMenuList>
-          <NavigationMenuItem>
-            <Link href="/create-post" passHref>
-              <Button variant="ghost">
-                <SquarePen />
-              </Button>
-            </Link>
-          </NavigationMenuItem>
-          <NavigationMenuItem>
-            <Link href="/login" passHref>
-              <Button variant="ghost">Login</Button>
-            </Link>
-          </NavigationMenuItem>
-          <NavigationMenuItem>
-            <Link href="/register" passHref>
-              <Button variant="ghost">Register</Button>
-            </Link>
-          </NavigationMenuItem>
-          <NavigationMenuItem>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="outline" size="icon">
-                  <SunIcon className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
-                  <MoonIcon className="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
-                  <span className="sr-only">Toggle theme</span>
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuItem onClick={() => setTheme("light")}>
-                  Light
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setTheme("dark")}>
-                  Dark
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setTheme("system")}>
-                  System
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </NavigationMenuItem>
-        </NavigationMenuList>
-      </NavigationMenu>
-    );
 
   return (
-    <main className="flex flex-col items-center justify-between">
-      <div className="w-full font-mono text-sm p-5 flex justify-end items-center">
-        {body}
-      </div>
+    <div className="flex flex-col items-center justify-between">
       <div className="font-mono flex flex-wrap justify-center">
         {postsData && postsData.posts.posts.length > 0 ? (
           postsData.posts.posts.map((post: Post) => (
             <Card className="w-[350px] m-4" key={post.title}>
               <CardHeader>
-                <CardTitle>{post.title}</CardTitle>
                 <CardDescription>
                   <p>@{post.creator.username}</p>
                   <p>{formatDateTime(post.createdAt)} </p>
                 </CardDescription>
               </CardHeader>
-              <CardContent>{post.text}</CardContent>
+              <CardContent className="text-sm">{post.text}</CardContent>
               <CardFooter>
                 <Button
                   variant="outline"
@@ -262,10 +160,19 @@ export default function Home() {
                 >
                   <PlusCircledIcon />
                 </Button>
-                <span className="mr-2">{post.points}</span>
-                <Button variant="outline" size="sm" onClick={() => handleVote(post.id, -1)}>
+                <span className="mr-2 text-sm">{post.points}</span>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => handleVote(post.id, -1)}
+                >
                   <MinusCircledIcon />
                 </Button>
+                <Link href="/post/[id]" as={`/post/${post.id}`} className="ml-auto">
+                  <Button variant="outline" size="sm" >
+                    <OpenInNewWindowIcon />
+                  </Button>
+                </Link>
               </CardFooter>
             </Card>
           ))
@@ -315,6 +222,6 @@ export default function Home() {
       ) : (
         <Ellipsis className="mb-3 text-gray-300" />
       )}
-    </main>
+    </div>
   );
 }
