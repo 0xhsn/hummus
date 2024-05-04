@@ -116,6 +116,16 @@ let PostResolver = class PostResolver {
         }
         return true;
     }
+    async voteStatus(post, { updootLoader, req }) {
+        if (!req.session.userId) {
+            return null;
+        }
+        const updoot = await updootLoader.load({
+            postId: post.id,
+            userId: req.session.userId,
+        });
+        return updoot ? updoot.value : null;
+    }
 };
 exports.PostResolver = PostResolver;
 __decorate([
@@ -169,7 +179,15 @@ __decorate([
     __metadata("design:paramtypes", [Number, Number, Object]),
     __metadata("design:returntype", Promise)
 ], PostResolver.prototype, "vote", null);
+__decorate([
+    (0, type_graphql_1.FieldResolver)(() => type_graphql_1.Int, { nullable: true }),
+    __param(0, (0, type_graphql_1.Root)()),
+    __param(1, (0, type_graphql_1.Ctx)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Post_1.Post, Object]),
+    __metadata("design:returntype", Promise)
+], PostResolver.prototype, "voteStatus", null);
 exports.PostResolver = PostResolver = __decorate([
-    (0, type_graphql_1.Resolver)()
+    (0, type_graphql_1.Resolver)(Post_1.Post)
 ], PostResolver);
 //# sourceMappingURL=post.js.map

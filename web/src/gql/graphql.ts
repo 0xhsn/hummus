@@ -98,6 +98,7 @@ export type Post = {
   text: Scalars['String']['output'];
   title: Scalars['String']['output'];
   updatedAt: Scalars['String']['output'];
+  voteStatus?: Maybe<Scalars['Int']['output']>;
 };
 
 export type PostInput = {
@@ -220,7 +221,7 @@ export type GetPostsQueryVariables = Exact<{
 }>;
 
 
-export type GetPostsQuery = { __typename?: 'Query', posts: { __typename?: 'PaginatedPosts', hasMore: boolean, posts: Array<{ __typename?: 'Post', id: number, title: string, text: string, createdAt: string, updatedAt: string, points: number, creator: { __typename?: 'User', id: number, username: string } }> } };
+export type GetPostsQuery = { __typename?: 'Query', posts: { __typename?: 'PaginatedPosts', hasMore: boolean, posts: Array<{ __typename?: 'Post', id: number, title: string, text: string, createdAt: string, updatedAt: string, points: number, voteStatus?: number | null, creator: { __typename?: 'User', id: number, username: string } }> } };
 
 
 export const ChangePasswordDocument = gql`
@@ -608,6 +609,7 @@ export const GetPostsDocument = gql`
       createdAt
       updatedAt
       points
+      voteStatus
       creator {
         id
         username
