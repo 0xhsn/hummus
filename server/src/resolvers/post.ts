@@ -9,6 +9,8 @@ import {
   Ctx,
   UseMiddleware,
   ObjectType,
+  FieldResolver,
+  Root,
 } from "type-graphql";
 import { Post } from "../entities/Post";
 import { MyContext } from "src/types";
@@ -34,7 +36,7 @@ class PaginatedPosts {
   hasMore: boolean;
 }
 
-@Resolver()
+@Resolver(Post)
 export class PostResolver {
   @Query(() => PaginatedPosts)
   async posts(
@@ -157,5 +159,22 @@ export class PostResolver {
       });
     }
     return true;
+  }
+
+  @FieldResolver(() => Int, { nullable: true })
+  async voteStatus(
+    @Root() post: Post,
+    @Ctx() { updootLoader, req }: MyContext
+  ) {
+    if (!req.session.userId) {
+      return null;
+    }
+
+    const updoot = await updootLoader.load({
+      postId: post.id,
+      userId: req.session.userId,
+    });
+
+    return updoot ? updoot.value : null;
   }
 }

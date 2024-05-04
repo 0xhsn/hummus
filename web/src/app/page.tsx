@@ -72,6 +72,7 @@ interface Post {
   text: string;
   createdAt: string;
   updatedAt: string;
+  voteStatus: number | null;
   creator: {
     id: number;
     username: string;
@@ -103,7 +104,6 @@ export default function Home() {
       cursor: null as null | string,
     },
     notifyOnNetworkStatusChange: true,
-    // fetchPolicy: "no-cache",
   });
 
   const [deletePost] = useDeletePostMutation();
@@ -145,6 +145,7 @@ export default function Home() {
                   text
                   createdAt
                   updatedAt
+                  voteStatus
                   creator {
                     id
                     username
@@ -178,6 +179,7 @@ export default function Home() {
                   text
                   createdAt
                   updatedAt
+                  voteStatus
                   creator {
                     id
                     username
@@ -199,7 +201,7 @@ export default function Home() {
     <div className="flex flex-col items-center justify-between">
       <div className="font-mono flex flex-wrap justify-center">
         {postsData && postsData.posts.posts.length > 0 ? (
-          postsData.posts.posts.map((post: Post) => (
+          postsData.posts.posts.map((post: { __typename?: "Post" | undefined; id: number; title: string; text: string; createdAt: string; updatedAt: string; points: number; voteStatus?: number | null | undefined; creator: { __typename?: "User" | undefined; id: number; username: string; }; }) => (
             <Card className="w-[350px] m-4" key={post.title}>
               <CardHeader>
                 <CardDescription>
@@ -212,7 +214,7 @@ export default function Home() {
                 <Button
                   variant="outline"
                   size="sm"
-                  className="mr-2"
+                  className={`mr-2 ${post.voteStatus === 1 ? "text-green-400" : ""}`}
                   onClick={() => handleVote(post.id, 1)}
                 >
                   <PlusCircledIcon />
@@ -222,6 +224,7 @@ export default function Home() {
                   variant="outline"
                   size="sm"
                   onClick={() => handleVote(post.id, -1)}
+                  className={`mr-2 ${post.voteStatus === -1 ? "text-red-400" : ""}`}
                 >
                   <MinusCircledIcon />
                 </Button>

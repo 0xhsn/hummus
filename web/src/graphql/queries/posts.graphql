@@ -8,6 +8,7 @@ query GetPosts($limit: Int!, $cursor: String) {
       createdAt
       updatedAt
       points
+      voteStatus
       creator {
         id
         username

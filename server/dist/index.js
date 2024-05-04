@@ -16,6 +16,7 @@ const ioredis_1 = __importDefault(require("ioredis"));
 const connect_redis_1 = __importDefault(require("connect-redis"));
 const cors_1 = __importDefault(require("cors"));
 const appDataSource_1 = require("./utils/appDataSource");
+const createUpdootLoader_1 = require("./utils/createUpdootLoader");
 const main = async () => {
     appDataSource_1.appDataSource
         .initialize()
@@ -45,7 +46,7 @@ const main = async () => {
             resolvers: [hello_1.HelloResolver, post_1.PostResolver, user_1.UserResolver],
             validate: false,
         }),
-        context: ({ req, res }) => ({ req, res, redis }),
+        context: ({ req, res }) => ({ req, res, redis, updootLoader: (0, createUpdootLoader_1.createUpdootLoader)() }),
     });
     app.use((0, cors_1.default)({
         origin: "http://localhost:3000",

@@ -11,6 +11,7 @@ import Redis from "ioredis";
 import RedisStore from "connect-redis";
 import cors from "cors";
 import { appDataSource } from "./utils/appDataSource";
+import { createUpdootLoader } from "./utils/createUpdootLoader";
 
 const main = async () => {
 
@@ -50,7 +51,7 @@ const main = async () => {
       resolvers: [HelloResolver, PostResolver, UserResolver],
       validate: false,
     }),
-    context: ({ req, res }) => ({ req, res, redis }),
+    context: ({ req, res }) => ({ req, res, redis, updootLoader: createUpdootLoader() }),
   });
 
   app.use(
