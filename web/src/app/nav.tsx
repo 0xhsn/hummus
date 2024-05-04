@@ -1,0 +1,200 @@
+"use client";
+
+import Image from "next/image";
+import { Button } from "@/components/ui/button";
+import {
+  NavigationMenu,
+  NavigationMenuContent,
+  NavigationMenuIndicator,
+  NavigationMenuItem,
+  NavigationMenuLink,
+  NavigationMenuList,
+  NavigationMenuTrigger,
+  NavigationMenuViewport,
+} from "@/components/ui/navigation-menu";
+import Link from "next/link";
+import {
+  GetPostsQuery,
+  VoteMutation,
+  useGetPostsQuery,
+  useLogoutUserMutation,
+  useMeQuery,
+  useVoteMutation,
+} from "@/gql/graphql";
+import { ApolloCache, gql, useApolloClient } from "@apollo/client";
+import { ChevronDown, Ellipsis, Loader2, SquarePen } from "lucide-react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { AlertCircle } from "lucide-react";
+import * as React from "react";
+import {
+  MoonIcon,
+  SunIcon,
+  PlusCircledIcon,
+  MinusCircledIcon,
+} from "@radix-ui/react-icons";
+import { useTheme } from "next-themes";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+
+import { format } from "date-fns";
+
+export default function Nav() {
+
+  const client = useApolloClient();
+  const { setTheme } = useTheme();
+
+  const [logout, { reset, loading: logoutLoading }] = useLogoutUserMutation();
+  const [vote] = useVoteMutation();
+
+  const { data, loading } = useMeQuery();
+  const {
+    data: postsData,
+    loading: loadingPosts,
+    fetchMore,
+  } = useGetPostsQuery({
+    variables: {
+      limit: 8,
+      cursor: null as null | string,
+    },
+    notifyOnNetworkStatusChange: true,
+    // fetchPolicy: "no-cache",
+  });
+
+  const handleLogout = () => {
+    logout({
+      onCompleted: () => {
+        client.writeQuery({
+          query: gql`
+            query Me {
+              me {
+                id
+                username
+              }
+            }
+          `,
+          data: { me: null },
+        });
+      },
+    });
+  };
+
+  const body =
+  !data || loading ? (
+    <Loader2 className="h-4 w-4 animate-spin" />
+  ) : data.me ? (
+    // User is logged in
+    <NavigationMenu>
+      <NavigationMenuList>
+        <NavigationMenuItem>
+          <Link href="/create-post" passHref>
+            <Button variant="ghost">
+              <SquarePen />
+            </Button>
+          </Link>
+        </NavigationMenuItem>
+        <NavigationMenuItem>
+        <Link href="/" passHref>
+          <Button variant="ghost" className="text-xl">
+            @{data.me.username}
+          </Button>
+        </Link>
+        </NavigationMenuItem>
+        <NavigationMenuItem>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" size="icon">
+                <SunIcon className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
+                <MoonIcon className="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+                <span className="sr-only">Toggle theme</span>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onClick={() => setTheme("light")}>
+                Light
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setTheme("dark")}>
+                Dark
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setTheme("system")}>
+                System
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </NavigationMenuItem>
+        <NavigationMenuItem>
+          <Button onClick={handleLogout} variant="outline">
+            {logoutLoading ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              "Logout"
+            )}
+          </Button>
+        </NavigationMenuItem>
+      </NavigationMenuList>
+    </NavigationMenu>
+  ) : (
+    // User is not logged in
+    <NavigationMenu>
+      <NavigationMenuList>
+        <NavigationMenuItem>
+          <Link href="/create-post" passHref>
+            <Button variant="ghost">
+              <SquarePen />
+            </Button>
+          </Link>
+        </NavigationMenuItem>
+        <NavigationMenuItem>
+          <Link href="/login" passHref>
+            <Button variant="ghost">Login</Button>
+          </Link>
+        </NavigationMenuItem>
+        <NavigationMenuItem>
+          <Link href="/register" passHref>
+            <Button variant="ghost">Register</Button>
+          </Link>
+        </NavigationMenuItem>
+        <NavigationMenuItem>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" size="icon">
+                <SunIcon className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
+                <MoonIcon className="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+                <span className="sr-only">Toggle theme</span>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onClick={() => setTheme("light")}>
+                Light
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setTheme("dark")}>
+                Dark
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setTheme("system")}>
+                System
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </NavigationMenuItem>
+      </NavigationMenuList>
+    </NavigationMenu>
+  );
+
+  return (
+    <div className="w-full font-mono text-sm p-5 flex justify-end items-center">
+      {body}
+    </div>
+  );
+}

@@ -3,7 +3,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { ApolloWrapper } from "./ApolloWrapper";
 import { ThemeProvider } from "@/components/theme-provider";
-
+import Nav from "./nav";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
@@ -26,7 +26,10 @@ export default function RootLayout({
             enableSystem
             disableTransitionOnChange
           >
-            {children}
+            <main className="flex flex-col items-center justify-between">
+              <Nav />
+              {children}
+            </main>
           </ThemeProvider>
         </ApolloWrapper>
       </body>
