@@ -42,7 +42,6 @@ export default function Page() {
   const searchParams = useSearchParams();
   const nxt = searchParams.get("next");
 
-  // 1. Define your form.
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -51,11 +50,7 @@ export default function Page() {
     },
   });
 
-  // 2. Define a submit handler.
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    // Do something with the form values.
-    // ✅ This will be type-safe and validated.
-    console.log(values);
     const response = await loginUser({
       variables: {
         usernameOrEmail: values.usernameOrEmail,

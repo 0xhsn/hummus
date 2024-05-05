@@ -8,9 +8,7 @@ export default function Page({ params }: { params: { id: string } }) {
       id: parseInt(params.id),
     },
   });
-
-  console.log(data);
-
+  
   return (
     <main className="font-mono md:container text-center">
       <h1 className="text-2xl font-bold text-center mt-4">
