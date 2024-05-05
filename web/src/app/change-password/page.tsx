@@ -8,20 +8,19 @@ import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { useQuery, gql, useMutation } from "@apollo/client";
-import { useRouter, usePathname, useSearchParams, redirect, notFound } from "next/navigation";
+import { gql } from "@apollo/client";
+import { useRouter, useSearchParams, notFound } from "next/navigation";
 import { NextPageContext } from "next";
 import { useChangePasswordMutation } from "@/gql/graphql";
 import { useState } from "react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { AlertCircle, Terminal } from "lucide-react";
+import { AlertCircle } from "lucide-react";
 
 const formSchema = z.object({
   newPassword: z.string(),
@@ -41,12 +40,14 @@ type FormFields = keyof z.infer<typeof formSchema>;
 export default function Page() {
   const searchParams = useSearchParams();
   const token = searchParams.get("token");
-  const uuidFormat =  /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/.test(token as string);
+  const uuidFormat =
+    /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/.test(
+      token as string
+    );
   const router = useRouter();
   const [tokenErr, setTokenErr] = useState(false);
 
-  const [changePassword, { data, loading, error }] =
-    useChangePasswordMutation();
+  const [changePassword] = useChangePasswordMutation();
 
   // 1. Define your form.
   const form = useForm<z.infer<typeof formSchema>>({
@@ -100,7 +101,7 @@ export default function Page() {
             <AlertCircle className="h-4 w-4" />
             <AlertTitle>Error</AlertTitle>
             <AlertDescription>
-            Your token has expired. Please initiate a new request.
+              Your token has expired. Please initiate a new request.
             </AlertDescription>
           </Alert>
         ) : (

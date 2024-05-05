@@ -8,19 +8,15 @@ import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
-  FormLabel,
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { useCreatePostMutation, useLoginUserMutation, useMeQuery } from "../../gql/graphql";
+import { useCreatePostMutation } from "../../gql/graphql";
 import { useRouter } from "next/navigation";
-import { useQuery, gql } from "@apollo/client";
-import Link from "next/link";
+import { gql } from "@apollo/client";
 import { Textarea } from "@/components/ui/textarea";
-import { create } from "domain";
 import { useIsAuth } from "@/utils/useIsAuth";
 
 const formSchema = z.object({
@@ -42,7 +38,7 @@ const GET_POSTS = gql`
 
 export default function Page() {
   useIsAuth();
-  const [createPost, { data, loading, error }] = useCreatePostMutation();
+  const [createPost] = useCreatePostMutation();
   const router = useRouter();
   
   // 1. Define your form.
@@ -59,7 +55,7 @@ export default function Page() {
     // Do something with the form values.
     // ✅ This will be type-safe and validated.
     console.log(values);
-    const response = await createPost({
+    await createPost({
       variables: {
         input: {
           title: values.title,

@@ -8,7 +8,6 @@ import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -16,8 +15,6 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useForgotPasswordMutation } from "../../gql/graphql";
-import { useRouter } from "next/navigation";
-import { useQuery, gql } from "@apollo/client";
 import { useState } from "react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Terminal } from "lucide-react";
@@ -26,10 +23,9 @@ const formSchema = z.object({
   email: z.string(),
 });
 
-type FormFields = keyof z.infer<typeof formSchema>;
 
 export default function Page() {
-  const [forgotPassword, { data, loading, error }] =
+  const [forgotPassword] =
     useForgotPasswordMutation();
   const [complete, setComplete] = useState(false);
 
@@ -46,7 +42,7 @@ export default function Page() {
     // Do something with the form values.
     // ✅ This will be type-safe and validated.
     console.log(values);
-    const response = await forgotPassword({
+    await forgotPassword({
       variables: {
         email: values.email,
       },
@@ -65,7 +61,7 @@ export default function Page() {
             <Terminal className="h-4 w-4" />
             <AlertTitle>Check your inbox!</AlertTitle>
             <AlertDescription>
-              If an account is associated with this email, we've sent you a link
+              If an account is associated with this email, we&apos;ve sent you a link
               to proceed.
             </AlertDescription>
           </Alert>
