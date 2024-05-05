@@ -20,6 +20,7 @@ export default [
       "react/jsx-uses-vars": "off",
       "react/react-in-jsx-scope": "off",
       "react/no-danger-with-children": "off",
+      "no-console": 2,
     },
   },
 ];
