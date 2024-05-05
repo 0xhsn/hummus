@@ -15,9 +15,9 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { useLoginUserMutation, useMeQuery } from "../../gql/graphql";
-import { ReadonlyURLSearchParams, useRouter, useSearchParams } from "next/navigation";
-import { useQuery, gql } from "@apollo/client";
+import { useLoginUserMutation } from "../../gql/graphql";
+import { useRouter, useSearchParams } from "next/navigation";
+import { gql } from "@apollo/client";
 import Link from "next/link";
 
 const GET_ME = gql`
@@ -37,7 +37,7 @@ const formSchema = z.object({
 type FormFields = keyof z.infer<typeof formSchema>;
 
 export default function Page() {
-  const [loginUser, { data, loading, error }] = useLoginUserMutation();
+  const [loginUser] = useLoginUserMutation();
   const router = useRouter();
   const searchParams = useSearchParams();
   const nxt = searchParams.get("next");

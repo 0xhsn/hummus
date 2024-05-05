@@ -7,10 +7,12 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "gen": "graphql-codegen --config codegen.ts"
+    "gen": "graphql-codegen --config codegen.ts",
+    "fix": "eslint --fix 'src/**/*'",
+    "format": "prettier --write ."
   },
   "dependencies": {
-    "@apollo/client": "^3.9.11",
+    "@apollo/client": "^3.10.2",
     "@apollo/experimental-nextjs-app-support": "^0.10.0",
     "@graphql-codegen/typescript-react-apollo": "^4.3.0",
     "@hookform/resolvers": "^3.3.4",
@@ -20,6 +22,8 @@
     "@radix-ui/react-label": "^2.0.2",
     "@radix-ui/react-navigation-menu": "^1.1.4",
     "@radix-ui/react-slot": "^1.0.2",
+    "@typescript-eslint/eslint-plugin": "^7.8.0",
+    "@typescript-eslint/parser": "^7.8.0",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.0",
     "dataloader": "^2.2.2",
@@ -37,17 +41,26 @@
     "tailwindcss-animate": "^1.0.7",
     "zod": "^3.22.4"
   },
+  "type": "module",
   "devDependencies": {
+    "@babel/core": "^7.24.5",
+    "@babel/eslint-parser": "^7.24.5",
+    "@eslint/js": "^9.2.0",
     "@graphql-codegen/cli": "5.0.2",
     "@graphql-codegen/client-preset": "4.2.5",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
-    "eslint": "^8",
+    "babel-eslint": "^10.1.0",
+    "eslint": "^9.2.0",
     "eslint-config-next": "14.2.0",
+    "eslint-plugin-react": "^7.34.1",
+    "globals": "^15.1.0",
     "graphql-codegen-apollo-next-ssr": "^1.7.4",
     "postcss": "^8",
+    "prettier": "^3.2.5",
     "tailwindcss": "^3.4.1",
-    "typescript": "^5.4.5"
+    "typescript": "^5.4.5",
+    "typescript-eslint": "^7.8.0"
   }
 }

@@ -3,7 +3,7 @@
 import { usePostQuery } from "@/gql/graphql";
 
 export default function Page({ params }: { params: { id: string } }) {
-  const { data, loading } = usePostQuery({
+  const { data } = usePostQuery({
     variables: {
       id: parseInt(params.id),
     },

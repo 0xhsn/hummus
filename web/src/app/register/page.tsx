@@ -8,14 +8,13 @@ import { Button } from "@/components/ui/button"
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
-import { useQuery, gql, useMutation } from '@apollo/client';
+import { gql } from '@apollo/client';
 import { useRegisterUserMutation } from '../../gql/graphql';
 import { useRouter } from 'next/navigation'
 
@@ -42,7 +41,7 @@ type FormFields = keyof z.infer<typeof formSchema>;
 
 export default function Page() {
 
-  const [registerUser, { data, loading, error }] = useRegisterUserMutation();
+  const [registerUser] = useRegisterUserMutation();
   const router = useRouter();
 
   // 1. Define your form.

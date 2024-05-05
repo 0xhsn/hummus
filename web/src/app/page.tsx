@@ -1,56 +1,32 @@
 "use client";
 
-import Image from "next/image";
 import { Button } from "@/components/ui/button";
-import {
-  NavigationMenu,
-  NavigationMenuContent,
-  NavigationMenuIndicator,
-  NavigationMenuItem,
-  NavigationMenuLink,
-  NavigationMenuList,
-  NavigationMenuTrigger,
-  NavigationMenuViewport,
-} from "@/components/ui/navigation-menu";
 import Link from "next/link";
 import {
-  GetPostsQuery,
-  VoteMutation,
   useDeletePostMutation,
   useGetPostsQuery,
-  useLogoutUserMutation,
   useMeQuery,
   useVoteMutation,
 } from "@/gql/graphql";
-import { ApolloCache, gql, useApolloClient } from "@apollo/client";
-import { ChevronDown, Ellipsis, Loader2, SquarePen } from "lucide-react";
+import { gql } from "@apollo/client";
+import { ChevronDown, Ellipsis } from "lucide-react";
 import {
   Card,
   CardContent,
   CardDescription,
   CardFooter,
   CardHeader,
-  CardTitle,
 } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { AlertCircle } from "lucide-react";
 import * as React from "react";
 import {
-  MoonIcon,
-  SunIcon,
   PlusCircledIcon,
   MinusCircledIcon,
   OpenInNewWindowIcon,
   TrashIcon,
 } from "@radix-ui/react-icons";
-import { useTheme } from "next-themes";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 
 import { format } from "date-fns";
 import {
@@ -65,19 +41,6 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 
-interface Post {
-  id: number;
-  points: number;
-  title: string;
-  text: string;
-  createdAt: string;
-  updatedAt: string;
-  voteStatus: number | null;
-  creator: {
-    id: number;
-    username: string;
-  };
-}
 
 const formatDateTime = (timestamp: string) => {
   const date = new Date(Number(timestamp));
@@ -87,13 +50,9 @@ const formatDateTime = (timestamp: string) => {
 };
 
 export default function Home() {
-  const client = useApolloClient();
-  const { setTheme } = useTheme();
-
-  const [logout, { reset, loading: logoutLoading }] = useLogoutUserMutation();
   const [vote] = useVoteMutation();
 
-  const { data, loading } = useMeQuery();
+  const { data } = useMeQuery();
   const {
     data: postsData,
     loading: loadingPosts,
@@ -214,7 +173,7 @@ export default function Home() {
                 <Button
                   variant="outline"
                   size="sm"
-                  className={`mr-2 ${post.voteStatus === 1 ? "text-green-400" : ""}`}
+                  className={`mr-2 ${post.voteStatus === 1 ? "text-green-400" : ""} hover:text-green-400`}
                   onClick={() => handleVote(post.id, 1)}
                 >
                   <PlusCircledIcon />
@@ -224,7 +183,7 @@ export default function Home() {
                   variant="outline"
                   size="sm"
                   onClick={() => handleVote(post.id, -1)}
-                  className={`mr-2 ${post.voteStatus === -1 ? "text-red-400" : ""}`}
+                  className={`mr-2 ${post.voteStatus === -1 ? "text-red-400" : ""} hover:text-red-400`}
                 >
                   <MinusCircledIcon />
                 </Button>
