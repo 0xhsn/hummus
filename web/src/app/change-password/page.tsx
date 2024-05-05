@@ -1,10 +1,10 @@
-"use client";
+'use client';
 
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
 
-import { Button } from "@/components/ui/button";
+import { Button } from '@/components/ui/button';
 import {
   Form,
   FormControl,
@@ -12,15 +12,15 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { gql } from "@apollo/client";
-import { useRouter, useSearchParams, notFound } from "next/navigation";
-import { NextPageContext } from "next";
-import { useChangePasswordMutation } from "@/gql/graphql";
-import { useState } from "react";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { AlertCircle } from "lucide-react";
+} from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import { gql } from '@apollo/client';
+import { useRouter, useSearchParams, notFound } from 'next/navigation';
+import { NextPageContext } from 'next';
+import { useChangePasswordMutation } from '@/gql/graphql';
+import { useState } from 'react';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { AlertCircle } from 'lucide-react';
 
 const formSchema = z.object({
   newPassword: z.string(),
@@ -39,7 +39,7 @@ type FormFields = keyof z.infer<typeof formSchema>;
 
 export default function Page() {
   const searchParams = useSearchParams();
-  const token = searchParams.get("token");
+  const token = searchParams.get('token');
   const uuidFormat =
     /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/.test(
       token as string
@@ -52,7 +52,7 @@ export default function Page() {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      newPassword: "",
+      newPassword: '',
     },
   });
 
@@ -74,12 +74,12 @@ export default function Page() {
           type: err.field,
           message: err.message,
         });
-        if (err.field == "token") {
+        if (err.field == 'token') {
           setTokenErr(true);
         }
       });
     } else if (response.data?.changePassword.user) {
-      router.push("/");
+      router.push('/');
     }
   };
 

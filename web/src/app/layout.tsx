@@ -1,15 +1,15 @@
-import PropTypes from "prop-types";
-import type { Metadata } from "next";
-import { Inter } from "next/font/google";
-import "./globals.css";
-import { ApolloWrapper } from "./ApolloWrapper";
-import { ThemeProvider } from "@/components/theme-provider";
-import Nav from "./nav";
-const inter = Inter({ subsets: ["latin"] });
+import PropTypes from 'prop-types';
+import type { Metadata } from 'next';
+import { Inter } from 'next/font/google';
+import './globals.css';
+import { ApolloWrapper } from './ApolloWrapper';
+import { ThemeProvider } from '@/components/theme-provider';
+import Nav from './nav';
+const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: "Reddit",
-  description: "wanna be full-stack dev",
+  title: 'Reddit',
+  description: 'wanna be full-stack dev',
 };
 
 export default function RootLayout({

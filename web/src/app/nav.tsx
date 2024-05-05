@@ -1,31 +1,31 @@
-"use client";
+'use client';
 
-import { Button } from "@/components/ui/button";
+import { Button } from '@/components/ui/button';
 import {
   NavigationMenu,
   NavigationMenuItem,
   NavigationMenuList,
-} from "@/components/ui/navigation-menu";
-import Link from "next/link";
+} from '@/components/ui/navigation-menu';
+import Link from 'next/link';
 import {
   useLogoutUserMutation,
   useMeQuery,
-} from "@/gql/graphql";
-import { gql, useApolloClient } from "@apollo/client";
-import { Loader2, SquarePen } from "lucide-react";
-import * as React from "react";
+} from '@/gql/graphql';
+import { gql, useApolloClient } from '@apollo/client';
+import { Loader2, SquarePen } from 'lucide-react';
+import * as React from 'react';
 import {
   MoonIcon,
   SunIcon,
-} from "@radix-ui/react-icons";
-import { useTheme } from "next-themes";
+} from '@radix-ui/react-icons';
+import { useTheme } from 'next-themes';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { useRouter } from "next/navigation";
+} from '@/components/ui/dropdown-menu';
+import { useRouter } from 'next/navigation';
 
 export default function Nav() {
   const client = useApolloClient();
@@ -85,13 +85,13 @@ export default function Nav() {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
-                <DropdownMenuItem onClick={() => setTheme("light")}>
+                <DropdownMenuItem onClick={() => setTheme('light')}>
                   Light
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setTheme("dark")}>
+                <DropdownMenuItem onClick={() => setTheme('dark')}>
                   Dark
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setTheme("system")}>
+                <DropdownMenuItem onClick={() => setTheme('system')}>
                   System
                 </DropdownMenuItem>
               </DropdownMenuContent>
@@ -101,14 +101,14 @@ export default function Nav() {
             <Button
               onClick={async () => {
                 await handleLogout();
-                router.replace("/");
+                router.replace('/');
               }}
               variant="outline"
             >
               {logoutLoading ? (
                 <Loader2 className="h-4 w-4 animate-spin" />
               ) : (
-                "Logout"
+                'Logout'
               )}
             </Button>
           </NavigationMenuItem>
@@ -145,13 +145,13 @@ export default function Nav() {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
-                <DropdownMenuItem onClick={() => setTheme("light")}>
+                <DropdownMenuItem onClick={() => setTheme('light')}>
                   Light
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setTheme("dark")}>
+                <DropdownMenuItem onClick={() => setTheme('dark')}>
                   Dark
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setTheme("system")}>
+                <DropdownMenuItem onClick={() => setTheme('system')}>
                   System
                 </DropdownMenuItem>
               </DropdownMenuContent>

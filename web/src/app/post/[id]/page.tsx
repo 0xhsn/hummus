@@ -1,6 +1,6 @@
-"use client";
+'use client';
 
-import { usePostQuery } from "@/gql/graphql";
+import { usePostQuery } from '@/gql/graphql';
 
 export default function Page({ params }: { params: { id: string } }) {
   const { data } = usePostQuery({

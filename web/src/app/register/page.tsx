@@ -1,10 +1,10 @@
-"use client"
+'use client'
  
-import { zodResolver } from "@hookform/resolvers/zod"
-import { useForm } from "react-hook-form"
-import { z } from "zod"
+import { zodResolver } from '@hookform/resolvers/zod'
+import { useForm } from 'react-hook-form'
+import { z } from 'zod'
  
-import { Button } from "@/components/ui/button"
+import { Button } from '@/components/ui/button'
 import {
   Form,
   FormControl,
@@ -12,8 +12,8 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form"
-import { Input } from "@/components/ui/input"
+} from '@/components/ui/form'
+import { Input } from '@/components/ui/input'
 import { gql } from '@apollo/client';
 import { useRegisterUserMutation } from '../../gql/graphql';
 import { useRouter } from 'next/navigation'
@@ -33,8 +33,8 @@ const formSchema = z.object({
   password: z.string(),
   confirm: z.string(),
 }).refine((data) => data.password === data.confirm, {
-  message: "Passwords don't match",
-  path: ["confirm"], // path of error
+  message: 'Passwords don\'t match',
+  path: ['confirm'], // path of error
 });
 
 type FormFields = keyof z.infer<typeof formSchema>;
@@ -47,10 +47,10 @@ export default function Page() {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      username: "",
-      email: "",
-      password: "",
-      confirm: ""
+      username: '',
+      email: '',
+      password: '',
+      confirm: ''
     },
   })
  
