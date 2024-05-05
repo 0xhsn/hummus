@@ -1,34 +1,34 @@
-"use client";
+'use client';
 
-import { Button } from "@/components/ui/button";
-import Link from "next/link";
+import { Button } from '@/components/ui/button';
+import Link from 'next/link';
 import {
   useDeletePostMutation,
   useGetPostsQuery,
   useMeQuery,
   useVoteMutation,
-} from "@/gql/graphql";
-import { gql } from "@apollo/client";
-import { ChevronDown, Ellipsis } from "lucide-react";
+} from '@/gql/graphql';
+import { gql } from '@apollo/client';
+import { ChevronDown, Ellipsis } from 'lucide-react';
 import {
   Card,
   CardContent,
   CardDescription,
   CardFooter,
   CardHeader,
-} from "@/components/ui/card";
-import { Skeleton } from "@/components/ui/skeleton";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { AlertCircle } from "lucide-react";
-import * as React from "react";
+} from '@/components/ui/card';
+import { Skeleton } from '@/components/ui/skeleton';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { AlertCircle } from 'lucide-react';
+import * as React from 'react';
 import {
   PlusCircledIcon,
   MinusCircledIcon,
   OpenInNewWindowIcon,
   TrashIcon,
-} from "@radix-ui/react-icons";
+} from '@radix-ui/react-icons';
 
-import { format } from "date-fns";
+import { format } from 'date-fns';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -39,14 +39,14 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
+} from '@/components/ui/alert-dialog';
 
 
 const formatDateTime = (timestamp: string) => {
   const date = new Date(Number(timestamp));
   return !isNaN(date.getTime())
-    ? format(date, "yyyy-MM-dd HH:mm:ss")
-    : "Invalid date";
+    ? format(date, 'yyyy-MM-dd HH:mm:ss')
+    : 'Invalid date';
 };
 
 export default function Home() {
@@ -160,7 +160,7 @@ export default function Home() {
     <div className="flex flex-col items-center justify-between">
       <div className="font-mono flex flex-wrap justify-center">
         {postsData && postsData.posts.posts.length > 0 ? (
-          postsData.posts.posts.map((post: { __typename?: "Post" | undefined; id: number; title: string; text: string; createdAt: string; updatedAt: string; points: number; voteStatus?: number | null | undefined; creator: { __typename?: "User" | undefined; id: number; username: string; }; }) => (
+          postsData.posts.posts.map((post: { __typename?: 'Post' | undefined; id: number; title: string; text: string; createdAt: string; updatedAt: string; points: number; voteStatus?: number | null | undefined; creator: { __typename?: 'User' | undefined; id: number; username: string; }; }) => (
             <Card className="w-[350px] m-4" key={post.title}>
               <CardHeader>
                 <CardDescription>
@@ -173,7 +173,7 @@ export default function Home() {
                 <Button
                   variant="outline"
                   size="sm"
-                  className={`mr-2 ${post.voteStatus === 1 ? "text-green-400" : ""} hover:text-green-400`}
+                  className={`mr-2 ${post.voteStatus === 1 ? 'text-green-400' : ''} hover:text-green-400`}
                   onClick={() => handleVote(post.id, 1)}
                 >
                   <PlusCircledIcon />
@@ -183,7 +183,7 @@ export default function Home() {
                   variant="outline"
                   size="sm"
                   onClick={() => handleVote(post.id, -1)}
-                  className={`mr-2 ${post.voteStatus === -1 ? "text-red-400" : ""} hover:text-red-400`}
+                  className={`mr-2 ${post.voteStatus === -1 ? 'text-red-400' : ''} hover:text-red-400`}
                 >
                   <MinusCircledIcon />
                 </Button>

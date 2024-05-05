@@ -1,10 +1,10 @@
-"use client";
+'use client';
 
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
 
-import { Button } from "@/components/ui/button";
+import { Button } from '@/components/ui/button';
 import {
   Form,
   FormControl,
@@ -13,12 +13,12 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { useLoginUserMutation } from "../../gql/graphql";
-import { useRouter, useSearchParams } from "next/navigation";
-import { gql } from "@apollo/client";
-import Link from "next/link";
+} from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import { useLoginUserMutation } from '../../gql/graphql';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { gql } from '@apollo/client';
+import Link from 'next/link';
 
 const GET_ME = gql`
   query Me {
@@ -40,13 +40,13 @@ export default function Page() {
   const [loginUser] = useLoginUserMutation();
   const router = useRouter();
   const searchParams = useSearchParams();
-  const nxt = searchParams.get("next");
+  const nxt = searchParams.get('next');
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      usernameOrEmail: "",
-      password: "",
+      usernameOrEmail: '',
+      password: '',
     },
   });
 
@@ -73,7 +73,7 @@ export default function Page() {
         router.push(nxt)
       }
       else {
-      router.push("/");
+      router.push('/');
       }
     }
   };

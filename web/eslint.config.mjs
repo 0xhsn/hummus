@@ -21,6 +21,7 @@ export default [
       "react/react-in-jsx-scope": "off",
       "react/no-danger-with-children": "off",
       "no-console": 2,
+      "quotes": ["error", "single"],
     },
   },
 ];

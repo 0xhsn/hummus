@@ -1,5 +1,5 @@
-import { useMeQuery } from "@/gql/graphql";
-import { usePathname, useRouter } from "next/navigation";
+import { useMeQuery } from '@/gql/graphql';
+import { usePathname, useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 
 export const useIsAuth = () => {

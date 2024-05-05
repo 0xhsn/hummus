@@ -1,23 +1,23 @@
-"use client";
+'use client';
 
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
 
-import { Button } from "@/components/ui/button";
+import { Button } from '@/components/ui/button';
 import {
   Form,
   FormControl,
   FormField,
   FormItem,
   FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { useCreatePostMutation } from "../../gql/graphql";
-import { useRouter } from "next/navigation";
-import { gql } from "@apollo/client";
-import { Textarea } from "@/components/ui/textarea";
-import { useIsAuth } from "@/utils/useIsAuth";
+} from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import { useCreatePostMutation } from '../../gql/graphql';
+import { useRouter } from 'next/navigation';
+import { gql } from '@apollo/client';
+import { Textarea } from '@/components/ui/textarea';
+import { useIsAuth } from '@/utils/useIsAuth';
 
 const formSchema = z.object({
   title: z.string(),
@@ -45,8 +45,8 @@ export default function Page() {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      title: "",
-      text: "",
+      title: '',
+      text: '',
     },
   });
 
