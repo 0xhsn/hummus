@@ -165,3 +165,4 @@ req.session = { userId: 1 }
   - on voting
   - on posting
 - email: resend + react email
+  - change the domain in the change password to make it work
