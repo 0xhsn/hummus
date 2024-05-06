@@ -1,9 +1,9 @@
+// Imports
 'use client';
-
+import React, { Suspense } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
-
 import { Button } from '@/components/ui/button';
 import {
   Form,
@@ -21,10 +21,7 @@ import { useChangePasswordMutation } from '@/gql/graphql';
 import { useState } from 'react';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { AlertCircle } from 'lucide-react';
-
-const formSchema = z.object({
-  newPassword: z.string(),
-});
+import { Skeleton } from '@/components/ui/skeleton'; // Ensure this component exists and is a suitable loading placeholder
 
 const GET_ME = gql`
   query Me {
@@ -35,20 +32,27 @@ const GET_ME = gql`
   }
 `;
 
+const formSchema = z.object({
+  newPassword: z.string(),
+});
+
 type FormFields = keyof z.infer<typeof formSchema>;
 
 export default function Page() {
+  return (
+    <Suspense fallback={<Skeleton />}>
+      <ChangePassword />
+    </Suspense>
+  );
+}
+
+function ChangePassword() {
   const searchParams = useSearchParams();
   const token = searchParams.get('token');
-  const uuidFormat =
-    /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/.test(
-      token as string
-    );
+  const uuidFormat = /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/.test(token as string);
   const router = useRouter();
   const [tokenErr, setTokenErr] = useState(false);
-
   const [changePassword] = useChangePasswordMutation();
-
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -66,7 +70,6 @@ export default function Page() {
     });
 
     const errors = response.data?.changePassword.errors;
-
     if (errors) {
       errors.forEach((err) => {
         const fieldName = err.field as FormFields;
