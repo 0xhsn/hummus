@@ -3,18 +3,15 @@ import { User } from "../entities/User";
 import { DataSource } from "typeorm";
 import path from 'path';
 import { Updoot } from "../entities/Updoot";
+import "dotenv-safe/config";
 
 export const appDataSource = new DataSource({
   type: "postgres",
-  host: "localhost",
-  port: 5432,
-  username: "macdoos",
-  password: "macdoos",
-  database: "reddit",
+  url: process.env.DATABASE_URL,
   migrations: [
     path.join(__dirname, '../migrations/*')
   ],
   entities: [Post, User, Updoot],
-  synchronize: true,
+  // synchronize: true,
   logging: true,
 });
