@@ -25,14 +25,12 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { useRouter } from 'next/navigation';
 
 export default function Nav() {
   const client = useApolloClient();
   const { setTheme } = useTheme();
 
   const [logout, { loading: logoutLoading }] = useLogoutUserMutation();
-  const router = useRouter();
 
   const { data, loading } = useMeQuery();
 
@@ -101,7 +99,7 @@ export default function Nav() {
             <Button
               onClick={async () => {
                 await handleLogout();
-                router.replace('/');
+                client.resetStore();
               }}
               variant="outline"
             >
