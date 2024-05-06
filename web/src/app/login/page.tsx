@@ -1,5 +1,6 @@
 'use client';
 
+import React, { Suspense } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -19,6 +20,7 @@ import { useLoginUserMutation } from '../../gql/graphql';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { gql } from '@apollo/client';
 import Link from 'next/link';
+import { Skeleton } from '@/components/ui/skeleton';
 
 const GET_ME = gql`
   query Me {
@@ -37,6 +39,14 @@ const formSchema = z.object({
 type FormFields = keyof z.infer<typeof formSchema>;
 
 export default function Page() {
+  return (
+    <Suspense fallback={<Skeleton />}>
+      <Login />
+    </Suspense>
+  );
+}
+
+function Login() {
   const [loginUser] = useLoginUserMutation();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -69,11 +79,10 @@ export default function Page() {
         });
       });
     } else if (response.data?.login.user) {
-      if (typeof nxt === 'string'){
-        router.push(nxt)
-      }
-      else {
-      router.push('/');
+      if (typeof nxt === 'string') {
+        router.push(nxt);
+      } else {
+        router.push('/');
       }
     }
   };
@@ -111,10 +120,7 @@ export default function Page() {
                     />
                   </FormControl>
                   <FormDescription>
-                    <Link
-                      href="/forgot-password"
-                      className="flex justify-end"
-                    >
+                    <Link href="/forgot-password" className="flex justify-end">
                       Forgot Password?
                     </Link>
                   </FormDescription>
