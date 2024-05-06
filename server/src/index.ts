@@ -36,12 +36,13 @@ const main = async () => {
       store: redisStore,
       resave: false,
       saveUninitialized: false,
-      secret: "keyboard cat",
+      secret: process.env.SESSION_SECRET,
       cookie: {
         maxAge: 1000 * 60 * 60 * 24 * 365 * 10, // 10 years
         httpOnly: true,
         secure: __prod__,
         sameSite: "lax",
+        domain: __prod__ ? "hapi.macdoos.dev" : undefined,
       },
     })
   );
@@ -54,9 +55,11 @@ const main = async () => {
     context: ({ req, res }) => ({ req, res, redis, updootLoader: createUpdootLoader() }),
   });
 
+  app.set("trust proxy", 1);
+  
   app.use(
     cors({
-      origin: "http://localhost:3000", // Adjust this to match your client URL
+      origin: process.env.CORS_ORIGIN,
       credentials: true,
     })
   );
@@ -64,7 +67,7 @@ const main = async () => {
   await apolloServer.start();
   apolloServer.applyMiddleware({ app, cors: false });
 
-  app.listen(4000, () => {
+  app.listen(parseInt(process.env.PORT), () => {
     console.log("server started on localhost:4000");
   });
 };
