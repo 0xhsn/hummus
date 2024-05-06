@@ -33,12 +33,13 @@ const main = async () => {
         store: redisStore,
         resave: false,
         saveUninitialized: false,
-        secret: "keyboard cat",
+        secret: process.env.SESSION_SECRET,
         cookie: {
             maxAge: 1000 * 60 * 60 * 24 * 365 * 10,
             httpOnly: true,
             secure: constants_1.__prod__,
             sameSite: "lax",
+            domain: constants_1.__prod__ ? "hapi.macdoos.dev" : undefined,
         },
     }));
     const apolloServer = new apollo_server_express_1.ApolloServer({
@@ -48,13 +49,14 @@ const main = async () => {
         }),
         context: ({ req, res }) => ({ req, res, redis, updootLoader: (0, createUpdootLoader_1.createUpdootLoader)() }),
     });
+    app.set("trust proxy", 1);
     app.use((0, cors_1.default)({
-        origin: "http://localhost:3000",
+        origin: process.env.CORS_ORIGIN,
         credentials: true,
     }));
     await apolloServer.start();
     apolloServer.applyMiddleware({ app, cors: false });
-    app.listen(4000, () => {
+    app.listen(parseInt(process.env.PORT), () => {
         console.log("server started on localhost:4000");
     });
 };
