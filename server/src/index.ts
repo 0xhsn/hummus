@@ -42,7 +42,7 @@ const main = async () => {
         httpOnly: true,
         secure: __prod__,
         sameSite: "lax",
-        domain: __prod__ ? "hapi.macdoos.dev" : undefined,
+        domain: process.env.COOKIE_DOMAIN,
       },
     })
   );
