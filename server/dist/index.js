@@ -39,7 +39,7 @@ const main = async () => {
             httpOnly: true,
             secure: constants_1.__prod__,
             sameSite: "lax",
-            domain: constants_1.__prod__ ? "hapi.macdoos.dev" : undefined,
+            domain: process.env.COOKIE_DOMAIN,
         },
     }));
     const apolloServer = new apollo_server_express_1.ApolloServer({
