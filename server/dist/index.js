@@ -38,7 +38,7 @@ const main = async () => {
             maxAge: 1000 * 60 * 60 * 24 * 365 * 10,
             httpOnly: true,
             secure: true,
-            sameSite: "lax",
+            sameSite: "none",
             domain: process.env.COOKIE_DOMAIN,
         },
     }));
@@ -49,6 +49,7 @@ const main = async () => {
         }),
         context: ({ req, res }) => ({ req, res, redis, updootLoader: (0, createUpdootLoader_1.createUpdootLoader)() }),
     });
+    app.set("trust proxy", 1);
     app.use((0, cors_1.default)({
         origin: process.env.CORS_ORIGIN,
         credentials: true,
