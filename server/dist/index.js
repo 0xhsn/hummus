@@ -49,7 +49,6 @@ const main = async () => {
         }),
         context: ({ req, res }) => ({ req, res, redis, updootLoader: (0, createUpdootLoader_1.createUpdootLoader)() }),
     });
-    app.set("trust proxy", 1);
     app.use((0, cors_1.default)({
         origin: process.env.CORS_ORIGIN,
         credentials: true,
