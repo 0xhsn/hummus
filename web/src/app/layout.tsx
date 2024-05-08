@@ -27,7 +27,7 @@ export default function RootLayout({
             enableSystem
             disableTransitionOnChange
           >
-            <main className="flex flex-col items-center justify-between">
+            <main>
               <Nav />
               {children}
             </main>
