@@ -66,7 +66,14 @@ function Login() {
         usernameOrEmail: values.usernameOrEmail,
         password: values.password,
       },
-      refetchQueries: [{ query: GET_ME }],
+      update: (cache, { data }) => {
+        cache.writeQuery({
+          query: GET_ME,
+          data: {
+            me: data?.login.user,
+          },
+        });
+      }
     });
 
     const errors = response.data?.login.errors;

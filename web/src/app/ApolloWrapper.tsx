@@ -1,4 +1,5 @@
 'use client'
+import { PaginatedPosts } from '@/gql/graphql';
 // ^ this file needs the "use client" pragma
 
 import { ApolloLink, HttpLink } from '@apollo/client';
@@ -8,6 +9,7 @@ import {
   NextSSRApolloClient,
   SSRMultipartLink,
 } from '@apollo/experimental-nextjs-app-support/ssr';
+
 
 // have a function to create a client for you
 function makeClient() {
@@ -26,7 +28,26 @@ function makeClient() {
 
   return new NextSSRApolloClient({
     // use the `NextSSRInMemoryCache`, not the normal `InMemoryCache`
-    cache: new NextSSRInMemoryCache(),
+    cache: new NextSSRInMemoryCache({
+      typePolicies: {
+        Query: {
+          fields: {
+            posts: {
+              keyArgs: [],
+              merge(
+                existing: PaginatedPosts | undefined,
+                incoming: PaginatedPosts
+              ): PaginatedPosts {
+                return {
+                  ...incoming,
+                  posts: [...(existing?.posts || []), ...incoming.posts],
+                };
+              },
+            },
+          },
+        },
+      },
+    }),
     link:
       typeof window === 'undefined'
         ? ApolloLink.from([

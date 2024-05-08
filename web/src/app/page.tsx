@@ -3,12 +3,13 @@
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import {
+  VoteMutation,
   useDeletePostMutation,
   useGetPostsQuery,
   useMeQuery,
   useVoteMutation,
 } from '@/gql/graphql';
-import { gql } from '@apollo/client';
+import { ApolloCache, gql } from '@apollo/client';
 import { ChevronDown, Ellipsis } from 'lucide-react';
 import {
   Card,
@@ -73,86 +74,73 @@ export default function Home() {
         cursor:
           postsData?.posts.posts[postsData.posts.posts.length - 1].createdAt,
       },
-      updateQuery: (prev, { fetchMoreResult }) => {
-        if (!fetchMoreResult) return prev;
+      // updateQuery: (prev, { fetchMoreResult }) => {
+      //   if (!fetchMoreResult) return prev;
 
-        return {
-          ...prev,
-          posts: {
-            ...prev.posts,
-            posts: [...prev.posts.posts, ...fetchMoreResult.posts.posts],
-            hasMore: fetchMoreResult.posts.hasMore, // Directly use hasMore from the backend
-          },
-        };
-      },
+      //   return {
+      //     ...prev,
+      //     posts: {
+      //       ...prev.posts,
+      //       posts: [...prev.posts.posts, ...fetchMoreResult.posts.posts],
+      //       hasMore: fetchMoreResult.posts.hasMore, // Directly use hasMore from the backend
+      //     },
+      //   };
+      // },
     });
+  };
+
+  const updateAfterVote = (
+    value: number,
+    postId: number,
+    cache: ApolloCache<VoteMutation>
+  ) => {
+    const data = cache.readFragment<{
+      id: number;
+      points: number;
+      voteStatus: number | null;
+    }>({
+      id: 'Post:' + postId,
+      fragment: gql`
+        fragment _ on Post {
+          id
+          points
+          voteStatus
+        }
+      `,
+    });
+  
+    if (data) {
+      if (data.voteStatus === value) {
+        return;
+      }
+      const newPoints =
+        (data.points as number) + (!data.voteStatus ? 1 : 2) * value;
+      cache.writeFragment({
+        id: 'Post:' + postId,
+        fragment: gql`
+          fragment __ on Post {
+            points
+            voteStatus
+          }
+        `,
+        data: { points: newPoints, voteStatus: value },
+      });
+    }
   };
 
   const handleVote = async (postId: number, value: number) => {
     await vote({
       variables: { value, postId },
-      refetchQueries: [
-        {
-          query: gql`
-            query GetPosts($limit: Int!, $cursor: String) {
-              posts(limit: $limit, cursor: $cursor) {
-                hasMore
-                posts {
-                  id
-                  points
-                  title
-                  text
-                  createdAt
-                  updatedAt
-                  voteStatus
-                  creator {
-                    id
-                    username
-                  }
-                }
-              }
-            }
-          `,
-          variables: {
-            limit: 8,
-            cursor: null,
-          },
-        },
-      ],
+      update: (cache) => updateAfterVote(value, postId, cache),
     });
   };
 
   const handleDelete = async (postId: number) => {
     await deletePost({
       variables: { id: postId },
-      refetchQueries: [
-        {
-          query: gql`
-            query GetPosts($limit: Int!, $cursor: String) {
-              posts(limit: $limit, cursor: $cursor) {
-                hasMore
-                posts {
-                  id
-                  points
-                  title
-                  text
-                  createdAt
-                  updatedAt
-                  voteStatus
-                  creator {
-                    id
-                    username
-                  }
-                }
-              }
-            }
-          `,
-          variables: {
-            limit: 8,
-            cursor: null,
-          },
-        },
-      ],
+      update: (cache) => {
+        cache.evict({ id: 'Post:' + postId });
+      }
     });
   };
 
