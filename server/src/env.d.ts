@@ -7,6 +7,7 @@ declare global {
       SESSION_SECRET: string;
       CORS_ORIGIN: string;
       COOKIE_DOMAIN: string;
+      NODE_ENV: "development" | "production";
     }
   }
 }
