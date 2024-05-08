@@ -10,7 +10,7 @@ export default function Page({ params }: { params: { id: string } }) {
   });
   
   return (
-    <main className="font-mono md:container text-center">
+    <main className="flex flex-col items-center justify-between font-mono p-10">
       <h1 className="text-2xl font-bold text-center mt-4">
         {data?.post?.title}
       </h1>

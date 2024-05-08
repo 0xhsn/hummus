@@ -53,7 +53,7 @@ export default function Page() {
   };
 
   return (
-    <main className="flex flex-col items-center justify-between p-24">
+    <main className="flex flex-col items-center justify-between p-10">
       <div className="z-10 w-full max-w-xl items-center justify-between font-mono text-sm">
         <h1 className="text-7xl mb-10">Post</h1>
         <Form {...form}>
