@@ -40,7 +40,7 @@ const main = async () => {
             httpOnly: true,
             secure: constants_1.__prod__,
             sameSite: constants_1.__prod__ ? "none" : "lax",
-            domain: process.env.COOKIE_DOMAIN,
+            domain: constants_1.__prod__ ? process.env.COOKIE_DOMAIN : undefined,
         },
     }));
     const apolloServer = new apollo_server_express_1.ApolloServer({

@@ -42,7 +42,7 @@ const main = async () => {
         httpOnly: true,
         secure: __prod__,
         sameSite: __prod__ ? "none" : "lax",
-        domain: process.env.COOKIE_DOMAIN,
+        domain: __prod__ ? process.env.COOKIE_DOMAIN : undefined,
       },
     })
   );

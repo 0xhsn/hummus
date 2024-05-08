@@ -15,7 +15,6 @@ import {
 import { Input } from '@/components/ui/input';
 import { useCreatePostMutation } from '../../gql/graphql';
 import { useRouter } from 'next/navigation';
-import { gql } from '@apollo/client';
 import { Textarea } from '@/components/ui/textarea';
 import { useIsAuth } from '@/utils/useIsAuth';
 
@@ -23,18 +22,6 @@ const formSchema = z.object({
   title: z.string(),
   text: z.string(),
 });
-
-const GET_POSTS = gql`
-  query GetPosts($limit: Int!, $cursor: String) {
-    posts(cursor: $cursor, limit: $limit) {
-      id
-      title
-      text
-      createdAt
-      updatedAt
-    }
-  }
-`;
 
 export default function Page() {
   useIsAuth();
@@ -58,10 +45,9 @@ export default function Page() {
           text: values.text,
         }
       },
-      refetchQueries: [{ query: GET_POSTS, variables: {
-        limit: 8,
-        cursor: null,
-      } }],
+      update: (cache) => {
+        cache.evict({ fieldName: 'posts:{}' });
+      },
     });
     router.push('/');
   };

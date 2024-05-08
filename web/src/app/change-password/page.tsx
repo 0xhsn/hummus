@@ -66,7 +66,14 @@ function ChangePassword() {
         token: token as string,
         newPassword: values.newPassword,
       },
-      refetchQueries: [{ query: GET_ME }],
+      update: (cache, { data }) => {
+        cache.writeQuery({
+          query: GET_ME,
+          data: {
+            me: data?.changePassword.user,
+          },
+        });
+      }
     });
 
     const errors = response.data?.changePassword.errors;

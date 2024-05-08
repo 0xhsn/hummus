@@ -32,7 +32,9 @@ export default function Nav() {
 
   const [logout, { loading: logoutLoading }] = useLogoutUserMutation();
 
-  const { data, loading } = useMeQuery();
+  const { data, loading } = useMeQuery({
+    skip: typeof window === 'undefined',
+  });
 
   const handleLogout = () => {
     logout({

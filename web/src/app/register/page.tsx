@@ -34,7 +34,7 @@ const formSchema = z.object({
   confirm: z.string(),
 }).refine((data) => data.password === data.confirm, {
   message: 'Passwords don\'t match',
-  path: ['confirm'], // path of error
+  path: ['confirm'],
 });
 
 type FormFields = keyof z.infer<typeof formSchema>;
@@ -63,7 +63,14 @@ export default function Page() {
           password: values.password,
         }
       },
-      refetchQueries: [{ query: GET_ME }],
+      update: (cache, { data }) => {
+        cache.writeQuery({
+          query: GET_ME,
+          data: {
+            me: data?.register.user
+          }
+        })
+      }
     });
     
     const errors = response.data?.register.errors;
