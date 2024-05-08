@@ -8,7 +8,7 @@ import Nav from './nav';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: 'Reddit',
+  title: 'Hummus',
   description: 'wanna be full-stack dev',
 };
 

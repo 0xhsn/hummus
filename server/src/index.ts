@@ -1,4 +1,5 @@
 import "reflect-metadata";
+import "dotenv-safe/config";
 import { COOKIE_NAME, __prod__ } from "./constants";
 import express from "express";
 import { ApolloServer } from "apollo-server-express";
@@ -18,7 +19,6 @@ const main = async () => {
   appDataSource
     .initialize()
     .then(() => {
-      // here you can start to work with your database
     })
     .catch((error) => console.log(error));
 
@@ -40,8 +40,8 @@ const main = async () => {
       cookie: {
         maxAge: 1000 * 60 * 60 * 24 * 365 * 10, // 10 years
         httpOnly: true,
-        secure: true,
-        sameSite: "none",
+        secure: __prod__,
+        sameSite: __prod__ ? "none" : "lax",
         domain: process.env.COOKIE_DOMAIN,
       },
     })
