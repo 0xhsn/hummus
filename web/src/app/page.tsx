@@ -73,19 +73,7 @@ export default function Home() {
       variables: {
         cursor:
           postsData?.posts.posts[postsData.posts.posts.length - 1].createdAt,
-      },
-      // updateQuery: (prev, { fetchMoreResult }) => {
-      //   if (!fetchMoreResult) return prev;
-
-      //   return {
-      //     ...prev,
-      //     posts: {
-      //       ...prev.posts,
-      //       posts: [...prev.posts.posts, ...fetchMoreResult.posts.posts],
-      //       hasMore: fetchMoreResult.posts.hasMore, // Directly use hasMore from the backend
-      //     },
-      //   };
-      // },
+      }
     });
   };
 
@@ -144,6 +132,8 @@ export default function Home() {
     });
   };
 
+  const loggedIn = data?.me;
+
   return (
     <div className="flex flex-col items-center justify-between">
       <div className="font-mono flex flex-wrap justify-center">
@@ -163,6 +153,7 @@ export default function Home() {
                   size="sm"
                   className={`mr-2 ${post.voteStatus === 1 ? 'text-green-400' : ''} hover:text-green-400`}
                   onClick={() => handleVote(post.id, 1)}
+                  disabled={!loggedIn}
                 >
                   <PlusCircledIcon />
                 </Button>
@@ -172,6 +163,7 @@ export default function Home() {
                   size="sm"
                   onClick={() => handleVote(post.id, -1)}
                   className={`mr-2 ${post.voteStatus === -1 ? 'text-red-400' : ''} hover:text-red-400`}
+                  disabled={!loggedIn}
                 >
                   <MinusCircledIcon />
                 </Button>
@@ -261,7 +253,7 @@ export default function Home() {
           <ChevronDown className="h-4 w-4" />
         </Button>
       ) : (
-        <Ellipsis className="mb-3 text-gray-300" />
+        <Ellipsis className="mb-3 text-gray-300 dark:opacity-50" />
       )}
     </div>
   );
