@@ -1,70 +1,82 @@
 # notes
+**hummus** is an implementation of Ben Awad's 13-hour full-stack tutorial. i changed the stack a bit, using the *latest* stack (listed below). this document is mostly for me to revisit.
 
-## setup
-### node + typescript
+## Stack
+- Next.js / React - TypeScript
+- Vercel
+- GraphQL
+- Apollo
+- shadcn/ui
+- TypeORM
+- Neon - PostgresSQL
+- Upstash - Redis
+
+## Setup
+
+### Node + TypeScript
 - `npm init -y`
-- `yarn add -D @types/node typescript` - add typescript to node
+- `yarn add -D @types/node typescript` - Add TypeScript to Node
 - `yarn add -D nodemon`
 
-### yarn scripts
-- `yarn watch` - recompile typescript code on every ts change
-- `yarn dev` - recompile and rerun js code with nodemon
-- `yarn create:migration`
+### Yarn Scripts
+- `yarn watch` - Recompile TypeScript code on every `.ts` change
+- `yarn dev` - Recompile and rerun JS code with Nodemon
+- `yarn create:migration` - Create migration scripts
 
-### database
-- `createdb reddit`
+### Database
+- `createdb reddit` - Create a PostgreSQL database named `reddit`
 
-### mikro-orm
+### Mikro-ORM
 - `yarn add @mikro-orm/cli @mikro-orm/core @mikro-orm/migrations @mikro-orm/postgresql pg`
-- `npx mikro-orm migration:create`
+- `npx mikro-orm migration:create` - Create a new Mikro-ORM migration
 
-### express + graphql
-- `yarn add experss apollo-server-express graphql type-graphql`
+### Express + GraphQL
+- `yarn add express apollo-server-express graphql type-graphql`
 - `yarn add -D @types/express`
 - `yarn add graphql@15.3.0`
 - `yarn add reflect-metadata`
 
-###  password hashing
-- `yarn add argon2` - [reason](https://news.ycombinator.com/item?id=15646743) to choose argon2 over bcrypt
+### Password Hashing
+- `yarn add argon2` - [Reason](https://news.ycombinator.com/item?id=15646743) to choose Argon2 over bcrypt
 
-### redis server on macOS
+### Redis Server on macOS
 - `brew install redis`
-- `redis-server` - run server
-- [more](https://redis.io/docs/latest/operate/oss_and_stack/install/install-redis/install-redis-on-mac-os/)
+- `redis-server` - Run Redis server
+- [More](https://redis.io/docs/latest/operate/oss_and_stack/install/install-redis/install-redis-on-mac-os/)
 - [connect-redis](https://github.com/tj/connect-redis)
   - `yarn add redis connect-redis express-session`
   - `yarn add -D @types/redis @types/express-session @types/connect-redis @types/express-session`
 
-### apollo (fronend)
-- [apollo-client-nextjs](https://github.com/apollographql/apollo-client-nextjs)
+### Apollo (Frontend)
+- [Apollo Client with Next.js](https://github.com/apollographql/apollo-client-nextjs)
 - [Apollo React Docs](https://www.apollographql.com/docs/react/data/mutations)
 
-### graphql code gen
+### GraphQL Code Generation
 - [Docs](https://the-guild.dev/graphql/codegen/plugins/typescript/typescript-apollo-next)
-- enable `withHooks`
+- Enable `withHooks`
 
 ## URLs
-- `http://localhost:4000/graphql` - graphql playground
-- `postgresql://postgres@127.0.0.1:5432` - postgresql url
+- `http://localhost:4000/graphql` - GraphQL playground
+- `postgresql://postgres@127.0.0.1:5432` - PostgreSQL URL
 
-## mutaitons
-### post: create
-```json
+## Mutations
+
+### Post: Create
+```graphql
 mutation($title: String!) {
   createPost(title: $title) {
     id
   }
 }
 ```
-
-```
+```json
 {
   "title": "hello from graphql"
 }
 ```
 
-### user: register
-```json
+### User: Register
+```graphql
 mutation($options: UsernamePasswordInput!) {
   register(options: $options) {
     errors {
@@ -77,7 +89,6 @@ mutation($options: UsernamePasswordInput!) {
   }
 }
 ```
-
 ```json
 {
   "options": {
@@ -87,8 +98,8 @@ mutation($options: UsernamePasswordInput!) {
 }
 ```
 
-### user: login
-```json
+### User: Login
+```graphql
 mutation($options: UsernamePasswordInput!) {
   login(options: $options) {
     errors {
@@ -102,8 +113,8 @@ mutation($options: UsernamePasswordInput!) {
 }
 ```
 
-### me query
-```json
+### Me Query
+```graphql
 {
   me {
     id
@@ -112,57 +123,41 @@ mutation($options: UsernamePasswordInput!) {
 }
 ```
 
-## sessions explained
-```js
-req.session.userId = user.id;
-```
+## Sessions Explained
+1. `req.session.userId = user.id;`
+   - `{ userId: 1 }` -> Send that to Redis
+2. `session:qwerty` -> `{ userId: 1 }`
+3. `express-session` will set a cookie on the browser (`qwerty`)
+4. When user makes a request: `qwerty` -> Sent to the server
+5. Server decrypts the cookie: `qwerty` -> `session:qwerty`
+6. Server makes a request to Redis: `session:qwerty` -> `{ userId: 1 }`
+7. `req.session = { userId: 1 }`
 
-`{ userId: 1 }` -> send that to redis
-
-
-1. `session:qwerty` -> `{ userId: 1 }`
-
-2. `express-session` will set a cookie on my browser (`qwerty`)
-
-3. when user makes a request: `qwerty` -> sent to the server
-
-4. server decrypts the cookie: `qwerty` -> `session:qwerty`
-
-5. server makes a request to redis: `session:qwerty` -> `{ userId: 1 }`
-
-```js
-req.session = { userId: 1 }
-```
-
-## TODO: refactor
-- SSR
+## TODO: Refactor
+- ~SSR~
+- ~Bun.js~
+- ~GitHub Actions~
+  - ~Linting~
+  - ~Secrets~
+- ~Deployment~
+  - ~Neon~
+  - ~Vercel~
+- ~Invalidate Queries~
+  - ~On voting~
+  - ~On posting~
+- Email: Resend + React Email
+  - Change the domain in the change password to make it work
 - Global Error Handling
   - Read [this](https://www.apollographql.com/docs/apollo-server/data/errors/)
-- GraphQL Fragments
-  - Regular User
-  - Regular Error
 - Jest
-- Bun.js
-- GitHub Actions
-  - Linting
-  - Secrets
-- Better error messages for validation
+- Better Error Messages for Validation - Think about auth in general
   - Email
   - Password
   - Username
-- Deployment
-  - neon?
-  - vercel?
-- https://kysely.dev/ ??
-- support app 
-  - a tool to make commands directly on production
+- [Kysely](https://kysely.dev/) or Drizzle Maybe?
+- Support App
+  - A tool to make commands directly on production
   - SQL runner
-- column names to snake case `creator_id`
-- move into likes model instead of points
-  - twitter killer? :P
-- unify icons
-- invalidate queries
-  - on voting
-  - on posting
-- email: resend + react email
-  - change the domain in the change password to make it work
+- Column Names to Snake Case (`creator_id`)
+- Move into Likes Model Instead of Points
+- Unify Icons
