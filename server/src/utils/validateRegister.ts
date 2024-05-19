@@ -10,11 +10,11 @@ const validateUsername = (username: string) => {
   return usernameRegex.test(username);
 };
 
-const validatePassword = (password: string) => {
-  const passwordRegex =
-    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
-  return passwordRegex.test(password);
-};
+// const validatePassword = (password: string) => {
+//   const passwordRegex =
+//     /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+//   return passwordRegex.test(password);
+// };
 
 export const validateRegister = (options: UsernamePasswordInput) => {
   if (!validateEmail(options.email)) {
@@ -35,14 +35,14 @@ export const validateRegister = (options: UsernamePasswordInput) => {
     ];
   }
 
-  if (!validatePassword(options.password)) {
-    return [
-      {
-        field: "password",
-        message: "invalid password",
-      },
-    ];
-  }
+  // if (!validatePassword(options.password)) {
+  //   return [
+  //     {
+  //       field: "password",
+  //       message: "invalid password",
+  //     },
+  //   ];
+  // }
 
   return null;
 };
