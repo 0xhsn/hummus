@@ -1,5 +1,5 @@
 # notes
-**hummus** is an implementation of Ben Awad's 13-hour full-stack tutorial. i changed the stack a bit, using the *latest* stack (listed below). this document is mostly for me to revisit.
+**hummus** is an implementation of Ben Awad's 13-hour full-stack tutorial. i changed the stack a bit, using the *latest* technologies used in today's apps (listed below). this document is mostly for me to revisit.
 
 ## Stack
 - Next.js / React - TypeScript
