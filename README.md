@@ -160,3 +160,4 @@ mutation($options: UsernamePasswordInput!) {
 - Column Names to Snake Case (`creator_id`)
 - Move into Likes Model Instead of Points
 - Unify Icons
+- PostHog
